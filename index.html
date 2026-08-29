@@ -509,6 +509,28 @@
     }
     #noteContentTextarea:focus { outline: none; border-color: var(--accent); }
 
+    .note-save-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      flex-shrink: 0;
+    }
+    .note-save-row button {
+      padding: 9px 20px;
+      font-size: 13px;
+      box-shadow: none;
+    }
+    #noteSavedHint {
+      font-size: 12px;
+      color: var(--text-muted);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    #noteSavedHint.show {
+      opacity: 0.85;
+    }
+
     #noteEditorView, #notesListView, #notesFolderView {
       flex: 1;
       display: flex;
@@ -1134,6 +1156,15 @@
       color: var(--text-muted);
       opacity: 0.75;
     }
+    .privacy-footer strong {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-dark);
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -1248,6 +1279,10 @@
         <button class="sub-back-btn" id="noteBackBtn">‹ Back to folder</button>
         <input type="text" id="noteTitleInput" placeholder="Title">
         <textarea id="noteContentTextarea" placeholder="Write here..."></textarea>
+        <div class="note-save-row">
+          <button id="saveNoteBtn">Save</button>
+          <span id="noteSavedHint">Saved ✓</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1746,6 +1781,8 @@
     const noteBackBtn = document.getElementById('noteBackBtn');
     const noteTitleInput = document.getElementById('noteTitleInput');
     const noteContentTextarea = document.getElementById('noteContentTextarea');
+    const saveNoteBtn = document.getElementById('saveNoteBtn');
+    const noteSavedHint = document.getElementById('noteSavedHint');
 
     function getNotesData() {
       const stored = localStorage.getItem('notesData');
@@ -1909,8 +1946,22 @@
       saveNotesData(data);
     }
 
+    let noteSavedHintTimeout = null;
+    function flashSavedHint() {
+      noteSavedHint.classList.add('show');
+      clearTimeout(noteSavedHintTimeout);
+      noteSavedHintTimeout = setTimeout(function() {
+        noteSavedHint.classList.remove('show');
+      }, 1400);
+    }
+
     noteTitleInput.addEventListener('input', saveCurrentNote);
     noteContentTextarea.addEventListener('input', saveCurrentNote);
+    saveNoteBtn.addEventListener('click', function() {
+      saveCurrentNote();
+      renderNoteList();
+      flashSavedHint();
+    });
 
     renderFolderList();
     showNotesView('folders');
