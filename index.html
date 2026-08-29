@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Tara, Aral Tayo?</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 
   <style>
     @font-face {
@@ -23,6 +23,7 @@
       --text-main: #4A2438;
       --text-muted: #8A5A70;
       --input-bg: #FFFFFF;
+      --btn-text: #FFFFFF;
     }
 
     body.dark-mode {
@@ -62,30 +63,15 @@
       text-align: center;
     }
 
-    .eyebrow {
-      font-size: 13px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 600;
-      opacity: 0.75;
-    }
-
     h1 {
-      font-family: 'Taste Bread', cursive;
+      font-family: 'Baloo 2', 'Poppins', sans-serif;
       color: var(--accent);
       font-size: 42px;
-      font-weight: 400;
-      margin: 8px 0 4px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin: 0 0 30px;
       line-height: 1.2;
-    }
-
-    .squiggle {
-      width: 70px;
-      height: 10px;
-      margin: 0 auto 30px;
-      border-bottom: 3px solid var(--accent-light);
-      border-radius: 50%;
     }
 
     /* ---------- Timer card ---------- */
@@ -129,7 +115,7 @@
 
     button {
       background: var(--accent);
-      color: white;
+      color: var(--btn-text, #FFFFFF);
       border: none;
       padding: 12px 26px;
       border-radius: 999px;
@@ -138,7 +124,7 @@
       font-family: inherit;
       cursor: pointer;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-      transition: transform 0.15s ease, background 0.15s ease, filter 0.15s ease;
+      transition: transform 0.15s ease, background 0.15s ease, filter 0.15s ease, color 0.15s ease;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
@@ -717,7 +703,7 @@
       font-size: 12.5px;
     }
 
-    #resetThemeBtn {
+    .reset-link-btn {
       background: none;
       color: var(--accent-dark);
       box-shadow: none;
@@ -725,6 +711,7 @@
       padding: 4px;
       font-size: 12.5px;
       margin-top: 16px;
+      display: block;
     }
 
     /* ---------- Report panel ---------- */
@@ -797,10 +784,35 @@
       * { animation: none !important; transition: none !important; }
     }
 
+    /* ---------- Custom text color: reach every label, not just inputs ---------- */
+    /* Buttons on solid accent backgrounds, and the selected calendar day, keep
+       their own contrast-aware text color on purpose so they stay legible. */
+    body.custom-text-active h1,
+    body.custom-text-active #modeLabel,
+    body.custom-text-active #modeLabel.break-mode,
+    body.custom-text-active #display,
+    body.custom-text-active #display.break-mode,
+    body.custom-text-active .setting-field label,
+    body.custom-text-active .side-panel h3,
+    body.custom-text-active .theme-section-label,
+    body.custom-text-active .stat-value,
+    body.custom-text-active #calMonthLabel,
+    body.custom-text-active .cal-dow,
+    body.custom-text-active #selectedDateLabel,
+    body.custom-text-active .cal-day.today,
+    body.custom-text-active #bgFileLabel,
+    body.custom-text-active .sub-back-btn,
+    body.custom-text-active .reset-link-btn,
+    body.custom-text-active #removeBgBtn,
+    body.custom-text-active .delete-btn,
+    body.custom-text-active .back-btn {
+      color: var(--text-main) !important;
+    }
+
     /* ==================== MOBILE ==================== */
     @media (max-width: 600px) {
       body {
-        padding: 28px 16px 96px;
+        padding: 84px 16px 40px;
       }
       .page { max-width: 100%; }
       h1 { font-size: 34px; }
@@ -809,21 +821,21 @@
       .timer-buttons button { padding: 12px 18px; font-size: 13.5px; }
       .settings-row { gap: 14px; }
 
-      /* Turn the decorated side rail into a bottom tab bar so it never overlaps content */
+      /* Turn the decorated side rail into a top tab bar so it never overlaps content */
       .tabs-container {
-        top: auto;
-        bottom: 0;
+        top: 0;
+        bottom: auto;
         left: 0;
         right: 0;
         flex-direction: row;
         align-items: center;
         justify-content: space-around;
         border: none;
-        border-top: 1.5px solid var(--accent-light);
+        border-bottom: 1.5px solid var(--accent-light);
         border-radius: 0;
         background: var(--bg-card);
-        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.14);
-        padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+        padding: calc(6px + env(safe-area-inset-top, 0px)) 4px 6px;
       }
       .side-tab {
         writing-mode: horizontal-tb;
@@ -883,9 +895,7 @@
 <body>
 
   <div class="page">
-    <div class="eyebrow">Study Timer</div>
     <h1>tara, aral tayo?</h1>
-    <div class="squiggle"></div>
 
     <div class="timer-card">
       <div id="modeLabel">Study Time</div>
@@ -1050,7 +1060,27 @@
       <span style="font-size:12.5px;">Pick your own</span>
     </div>
 
-    <button id="resetThemeBtn">Reset to default pink</button>
+    <button id="resetThemeBtn" class="reset-link-btn">Reset to default pink</button>
+
+    <div class="theme-section-label">Background color</div>
+    <div class="swatch-row" id="bgColorSwatchRow"></div>
+
+    <div class="custom-color-row">
+      <input type="color" id="bgColorCustomInput" value="#FFF9FB">
+      <span style="font-size:12.5px;">Pick your own</span>
+    </div>
+
+    <button id="resetBgColorBtn" class="reset-link-btn">Use theme gradient</button>
+
+    <div class="theme-section-label">Text color</div>
+    <div class="swatch-row" id="textColorSwatchRow"></div>
+
+    <div class="custom-color-row">
+      <input type="color" id="textColorCustomInput" value="#4A2438">
+      <span style="font-size:12.5px;">Pick your own</span>
+    </div>
+
+    <button id="resetTextColorBtn" class="reset-link-btn">Use theme text color</button>
 
     <div class="theme-section-label">Background image</div>
     <label id="bgFileLabel" for="bgFileInput">Upload photo</label>
@@ -1083,6 +1113,36 @@
     let timerInterval = null;
     let running = false;
 
+    // ---------- Chime (plays when a study or break period ends) ----------
+    let audioCtx = null;
+    function unlockAudio() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function playChime() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const notes = [880, 1108.73, 1318.51]; // a bright little three-note chime
+      notes.forEach(function(freq, i) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = now + i * 0.16;
+        const end = start + 0.5;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.22, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, end);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(end + 0.05);
+      });
+    }
+
     function currentModeMinutes() {
       return mode === 'study' ? studyMinutes : breakMinutes;
     }
@@ -1114,6 +1174,7 @@
     }
 
     function switchMode() {
+      playChime();
       if (mode === 'study') {
         logStudySession(studyMinutes);
       }
@@ -1124,6 +1185,7 @@
     }
 
     startBtn.addEventListener('click', function() {
+      unlockAudio();
       running = true;
       setButtonsRunning(true);
       timerInterval = setInterval(function() {
@@ -1753,8 +1815,19 @@
     const bgFileInput = document.getElementById('bgFileInput');
     const removeBgBtn = document.getElementById('removeBgBtn');
 
+    const bgColorSwatchRow = document.getElementById('bgColorSwatchRow');
+    const bgColorCustomInput = document.getElementById('bgColorCustomInput');
+    const resetBgColorBtn = document.getElementById('resetBgColorBtn');
+
+    const textColorSwatchRow = document.getElementById('textColorSwatchRow');
+    const textColorCustomInput = document.getElementById('textColorCustomInput');
+    const resetTextColorBtn = document.getElementById('resetTextColorBtn');
+
     const presetColors = ['#D6336C', '#E8590C', '#2F9E44', '#1971C2', '#7048E8', '#495057'];
     const DEFAULT_COLOR = '#D6336C';
+
+    const bgColorPresets = ['#FDF6E3', '#EAF7ED', '#E7F0FB', '#F5E9F7', '#232323'];
+    const textColorPresets = ['#1A1A1A', '#2B2B2B', '#003049', '#5C3A21', '#FFFFFF'];
 
     function shadeColor(hex, percent) {
       const num = parseInt(hex.replace('#', ''), 16);
@@ -1767,41 +1840,122 @@
       return '#' + [r, g, b].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
     }
 
+    // Picks black-ish or white text depending on how light/dark the given
+    // accent color is, so the Start/Pause/Reset buttons stay readable no
+    // matter which accent color is chosen.
+    function getContrastTextColor(hex) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = (num >> 16) & 0xFF;
+      const g = (num >> 8) & 0xFF;
+      const b = num & 0xFF;
+      const luminance = (r * 299 + g * 587 + b * 114) / 1000;
+      return luminance >= 150 ? '#2A1420' : '#FFFFFF';
+    }
+
+    function updateSwatchSelectionIn(container, colorOrDefault) {
+      container.querySelectorAll('.swatch').forEach(function(sw) {
+        sw.classList.toggle('selected', !!colorOrDefault && sw.dataset.color.toLowerCase() === colorOrDefault.toLowerCase());
+      });
+    }
+
+    function buildSwatches(container, colors, onPick) {
+      colors.forEach(function(color) {
+        const sw = document.createElement('div');
+        sw.className = 'swatch';
+        sw.style.background = color;
+        sw.dataset.color = color;
+        sw.addEventListener('click', function() { onPick(color); });
+        container.appendChild(sw);
+      });
+    }
+
+    // Adds a leading "Default" swatch (shown as a soft multi-tone chip) that
+    // restores the app's normal color combination, ahead of the flat presets.
+    function buildSwatchesWithDefault(container, colors, onPick, onDefault, defaultCss) {
+      const defaultSw = document.createElement('div');
+      defaultSw.className = 'swatch';
+      defaultSw.style.background = defaultCss;
+      defaultSw.dataset.color = 'default';
+      defaultSw.title = 'Default';
+      defaultSw.addEventListener('click', onDefault);
+      container.appendChild(defaultSw);
+      buildSwatches(container, colors, onPick);
+    }
+
+    // ---------- Accent color ----------
     function applyTheme(color) {
       document.documentElement.style.setProperty('--accent', color);
       document.documentElement.style.setProperty('--accent-dark', shadeColor(color, -18));
       document.documentElement.style.setProperty('--accent-light', shadeColor(color, 72));
       document.documentElement.style.setProperty('--accent-pale', shadeColor(color, 90));
+      document.documentElement.style.setProperty('--btn-text', getContrastTextColor(color));
       localStorage.setItem('themeColor', color);
       customColorInput.value = color;
-      updateSwatchSelection(color);
+      updateSwatchSelectionIn(swatchRow, color);
     }
 
-    function updateSwatchSelection(color) {
-      document.querySelectorAll('.swatch').forEach(function(sw) {
-        sw.classList.toggle('selected', sw.dataset.color.toLowerCase() === color.toLowerCase());
-      });
-    }
-
-    presetColors.forEach(function(color) {
-      const sw = document.createElement('div');
-      sw.className = 'swatch';
-      sw.style.background = color;
-      sw.dataset.color = color;
-      sw.addEventListener('click', function() { applyTheme(color); });
-      swatchRow.appendChild(sw);
-    });
-
-    customColorInput.addEventListener('input', function() {
-      applyTheme(customColorInput.value);
-    });
-
-    resetThemeBtn.addEventListener('click', function() {
-      applyTheme(DEFAULT_COLOR);
-    });
-
+    buildSwatches(swatchRow, presetColors, applyTheme);
+    customColorInput.addEventListener('input', function() { applyTheme(customColorInput.value); });
+    resetThemeBtn.addEventListener('click', function() { applyTheme(DEFAULT_COLOR); });
     const savedColor = localStorage.getItem('themeColor') || DEFAULT_COLOR;
     applyTheme(savedColor);
+
+    // ---------- Background color (separate from accent) ----------
+    function applyBgColor(color) {
+      document.body.style.backgroundImage = 'none';
+      document.body.style.backgroundColor = color;
+      localStorage.setItem('bgColor', color);
+      localStorage.removeItem('bgImage');
+      bgColorCustomInput.value = color;
+      updateSwatchSelectionIn(bgColorSwatchRow, color);
+    }
+
+    function resetBgColor() {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundColor = '';
+      localStorage.removeItem('bgColor');
+      updateSwatchSelectionIn(bgColorSwatchRow, 'default');
+      const savedBgImg = localStorage.getItem('bgImage');
+      if (savedBgImg) applyBackgroundImage(savedBgImg);
+    }
+
+    buildSwatchesWithDefault(
+      bgColorSwatchRow, bgColorPresets, applyBgColor, resetBgColor,
+      'linear-gradient(135deg, var(--accent-light), var(--accent-pale) 55%, var(--accent))'
+    );
+    bgColorCustomInput.addEventListener('input', function() { applyBgColor(bgColorCustomInput.value); });
+    resetBgColorBtn.addEventListener('click', resetBgColor);
+
+    // ---------- Text color (separate from accent) ----------
+    // custom-text-active broadens the override to headings, labels, and panel
+    // titles too, not just the elements that already referenced --text-main.
+    function applyTextColor(color) {
+      document.body.style.setProperty('--text-main', color);
+      document.body.classList.add('custom-text-active');
+      localStorage.setItem('textColor', color);
+      textColorCustomInput.value = color;
+      updateSwatchSelectionIn(textColorSwatchRow, color);
+    }
+
+    function resetTextColor() {
+      document.body.style.removeProperty('--text-main');
+      document.body.classList.remove('custom-text-active');
+      localStorage.removeItem('textColor');
+      updateSwatchSelectionIn(textColorSwatchRow, 'default');
+      textColorCustomInput.value = getComputedStyle(document.body).getPropertyValue('--text-main').trim() || '#4A2438';
+    }
+
+    buildSwatchesWithDefault(
+      textColorSwatchRow, textColorPresets, applyTextColor, resetTextColor,
+      'linear-gradient(135deg, var(--accent-dark), var(--text-muted) 55%, var(--accent))'
+    );
+    textColorCustomInput.addEventListener('input', function() { applyTextColor(textColorCustomInput.value); });
+    resetTextColorBtn.addEventListener('click', resetTextColor);
+
+    const savedBgColor = localStorage.getItem('bgColor');
+    if (savedBgColor) { applyBgColor(savedBgColor); } else { updateSwatchSelectionIn(bgColorSwatchRow, 'default'); }
+    const savedTextColor = localStorage.getItem('textColor');
+    if (savedTextColor) { applyTextColor(savedTextColor); } else { updateSwatchSelectionIn(textColorSwatchRow, 'default'); }
 
     // ---------- Dark mode ----------
     const darkModeToggle = document.getElementById('darkModeToggle');
@@ -1819,7 +1973,10 @@
     const MAX_IMAGE_CHARS = 1200000; // roughly 900KB — keeps localStorage from filling up
 
     function applyBackgroundImage(dataUrl) {
+      document.body.style.backgroundColor = '';
       document.body.style.backgroundImage = 'url(' + dataUrl + ')';
+      localStorage.removeItem('bgColor');
+      updateSwatchSelectionIn(bgColorSwatchRow, null);
     }
 
     function clearBackgroundImage() {
