@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Tara, Aral Tayo?</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -33,7 +34,9 @@
       --accent-pale: #2A1C22;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html { -webkit-text-size-adjust: 100%; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -46,6 +49,7 @@
       min-height: 100vh;
       padding: 50px 20px 80px;
       transition: background 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
     }
 
     body.dark-mode {
@@ -94,16 +98,6 @@
       animation: floatIn 0.5s ease both;
     }
 
-    .timer-card::before {
-      content: "✿";
-      position: absolute;
-      top: -18px;
-      left: -14px;
-      font-size: 30px;
-      color: var(--accent-light);
-      transform: rotate(-15deg);
-    }
-
     #modeLabel {
       font-size: 13px;
       font-weight: 700;
@@ -130,6 +124,7 @@
       gap: 8px;
       justify-content: center;
       margin-bottom: 22px;
+      flex-wrap: wrap;
     }
 
     button {
@@ -144,6 +139,8 @@
       cursor: pointer;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
       transition: transform 0.15s ease, background 0.15s ease, filter 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     button:hover {
       background: var(--accent-dark);
@@ -166,6 +163,7 @@
       border-top: 1.5px dashed var(--accent-light);
       padding-top: 18px;
       margin-top: 4px;
+      flex-wrap: wrap;
     }
     .setting-field {
       display: flex;
@@ -202,24 +200,51 @@
       right: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      align-items: stretch;
+      gap: 0;
       z-index: 10;
+      background: var(--bg-panel);
+      border: 1.5px solid var(--accent-light);
+      border-right: none;
+      border-radius: 18px 0 0 18px;
+      padding: 14px 0;
+      box-shadow: -6px 6px 20px rgba(0, 0, 0, 0.14);
     }
 
     .side-tab {
-      background: var(--accent);
-      color: white;
-      padding: 14px 9px;
-      border-radius: 12px 0 0 12px;
+      background: none;
+      color: var(--accent-dark);
+      padding: 13px 12px;
       cursor: pointer;
       writing-mode: vertical-rl;
       font-weight: 600;
-      font-size: 13px;
-      letter-spacing: 0.06em;
-      box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.18);
-      transition: padding-right 0.2s ease, background 0.2s ease;
+      font-size: 12.5px;
+      letter-spacing: 0.08em;
+      box-shadow: none;
+      transition: background 0.2s ease, color 0.2s ease, padding-right 0.2s ease;
+      user-select: none;
+      border-top: 1px dashed var(--accent-light);
+      position: relative;
     }
-    .side-tab:hover { padding-right: 13px; }
+    .side-tab:first-of-type { border-top: none; }
+    .side-tab::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.5;
+    }
+    .side-tab:hover {
+      background: var(--accent);
+      color: white;
+      padding-right: 16px;
+    }
+    .side-tab:hover::before { background: white; opacity: 0.9; }
 
     .side-panel {
       position: fixed;
@@ -252,9 +277,9 @@
     .back-btn {
       background: var(--accent-light);
       color: var(--accent-dark);
-      width: 30px;
-      height: 30px;
-      min-width: 30px;
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
       padding: 0;
       border-radius: 50%;
       font-size: 16px;
@@ -366,7 +391,7 @@
       background: none;
       color: var(--accent-dark);
       box-shadow: none;
-      padding: 2px 6px;
+      padding: 6px 8px;
       font-size: 15px;
       line-height: 1;
       flex-shrink: 0;
@@ -466,7 +491,7 @@
       margin-bottom: 14px;
     }
     .cal-header button {
-      padding: 4px 10px;
+      padding: 6px 12px;
       font-size: 13px;
       box-shadow: none;
       background: var(--accent-light);
@@ -770,6 +795,88 @@
 
     @media (prefers-reduced-motion: reduce) {
       * { animation: none !important; transition: none !important; }
+    }
+
+    /* ==================== MOBILE ==================== */
+    @media (max-width: 600px) {
+      body {
+        padding: 28px 16px 96px;
+      }
+      .page { max-width: 100%; }
+      h1 { font-size: 34px; }
+      .timer-card { padding: 28px 18px 24px; }
+      #display { font-size: 46px; }
+      .timer-buttons button { padding: 12px 18px; font-size: 13.5px; }
+      .settings-row { gap: 14px; }
+
+      /* Turn the decorated side rail into a bottom tab bar so it never overlaps content */
+      .tabs-container {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        border: none;
+        border-top: 1.5px solid var(--accent-light);
+        border-radius: 0;
+        background: var(--bg-card);
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.14);
+        padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+      }
+      .side-tab {
+        writing-mode: horizontal-tb;
+        flex: 1;
+        text-align: center;
+        border-radius: 12px;
+        border-top: none;
+        padding: 9px 2px;
+        font-size: 10.5px;
+        letter-spacing: 0.02em;
+        margin: 0 2px;
+      }
+      .side-tab::before { display: none; }
+      .side-tab:hover { padding-right: 2px; }
+
+      /* Panels open as bottom sheets instead of right-side drawers */
+      .side-panel {
+        top: auto;
+        bottom: -100%;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 85vh;
+        max-height: 85vh;
+        border-radius: 22px 22px 0 0;
+        padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+        transition: bottom 0.3s ease, background 0.3s ease;
+      }
+      .side-panel.open { bottom: 0; right: 0; }
+
+      /* Prevent iOS auto-zoom on focus by keeping inputs at 16px+ */
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        font-size: 16px;
+      }
+      .new-row input[type="text"] { font-size: 15px; }
+      #eventInput { font-size: 15px; }
+      #checklistInput { font-size: 15px; width: 62%; }
+
+      .setting-field input { width: 56px; font-size: 15px; }
+
+      .back-btn { width: 36px; height: 36px; min-width: 36px; }
+      .delete-btn { padding: 8px 10px; }
+
+      .report-stats { gap: 6px; }
+      .stat-box { padding: 10px 4px; }
+    }
+
+    @media (max-width: 360px) {
+      #display { font-size: 40px; }
+      .timer-buttons button { padding: 10px 14px; font-size: 12.5px; }
+      .side-tab { font-size: 9.5px; padding: 8px 2px; }
     }
   </style>
 </head>
