@@ -52,10 +52,29 @@
       padding: 50px 20px 80px;
       transition: background 0.3s ease, color 0.3s ease;
       overflow-x: hidden;
+      position: relative;
     }
 
     body.dark-mode {
       background: linear-gradient(160deg, var(--accent-pale) 0%, #14100F 45%, var(--accent-pale) 100%);
+    }
+
+    /* ---------- Doodle overlay layer ---------- */
+    #doodleLayer {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-repeat: repeat;
+      background-position: 0 0;
+      opacity: 0.35;
+      transition: opacity 0.3s ease;
+    }
+    #doodleLayer.doodle-none { display: none; }
+
+    .page, .timer-card, .tabs-container, .side-panel, .watermark {
+      position: relative;
+      z-index: 1;
     }
 
     .page {
@@ -749,6 +768,94 @@
       display: block;
     }
 
+    /* ---------- Doodle picker ---------- */
+    .doodle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0 6px;
+    }
+    .doodle-option {
+      background: var(--bg-card);
+      border: 2px solid var(--accent-light);
+      border-radius: 12px;
+      padding: 10px 6px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+      color: var(--text-main);
+    }
+    .doodle-option:hover { transform: translateY(-1px); }
+    .doodle-option.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .doodle-swatch-preview {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      background-color: var(--accent-pale);
+      background-repeat: repeat;
+      background-size: 32px 32px;
+    }
+    .doodle-option-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .doodle-density-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 4px;
+    }
+    .doodle-density-row label {
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .doodle-density-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+    .doodle-number-input {
+      width: 46px;
+      text-align: center;
+      padding: 5px 4px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--text-main);
+      background: var(--input-bg);
+      flex-shrink: 0;
+    }
+    .doodle-number-input:focus { outline: none; border-color: var(--accent); }
+    .doodle-unit {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      width: 14px;
+    }
+    .doodle-color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 4px;
+    }
+    .doodle-color-row input[type="color"] {
+      width: 40px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      padding: 0;
+      cursor: pointer;
+      background: none;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14);
+    }
+    .doodle-color-row span { font-size: 12.5px; color: var(--text-muted); }
+
     /* ---------- Report panel ---------- */
     .report-stats {
       display: flex;
@@ -839,7 +946,8 @@
     body.custom-text-active #removeBgBtn,
     body.custom-text-active .delete-btn,
     body.custom-text-active .back-btn,
-    body.custom-text-active .timer-buttons button {
+    body.custom-text-active .timer-buttons button,
+    body.custom-text-active .doodle-option-label {
       color: var(--text-main) !important;
     }
 
@@ -914,6 +1022,8 @@
 
       .report-stats { gap: 6px; }
       .stat-box { padding: 10px 4px; }
+
+      .doodle-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     }
 
     @media (max-width: 360px) {
@@ -941,6 +1051,9 @@
   </style>
 </head>
 <body>
+
+  <!-- Doodle background overlay -->
+  <div id="doodleLayer"></div>
 
   <div class="page">
     <h1>tara, aral tayo?</h1>
@@ -1126,6 +1239,32 @@
         <span style="font-size:12.5px;">Pick your own</span>
       </div>
       <button id="resetBgColorBtn" class="reset-link-btn">Use theme gradient</button>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="doodleBody">
+      <span>Doodles &amp; stuff</span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="doodleBody">
+      <div class="doodle-grid" id="doodleGrid"></div>
+
+      <div class="doodle-density-row">
+        <label for="doodleDensityInput">Size</label>
+        <input type="range" id="doodleDensityInput" min="18" max="60" value="32">
+        <input type="number" id="doodleDensityNumber" class="doodle-number-input" min="18" max="60" value="32">
+        <span class="doodle-unit">px</span>
+      </div>
+
+      <div class="doodle-color-row">
+        <input type="color" id="doodleColorInput" value="#D6336C">
+        <span>Doodle color</span>
+      </div>
+      <div class="doodle-density-row">
+        <label for="doodleOpacityInput">Opacity</label>
+        <input type="range" id="doodleOpacityInput" min="4" max="80" value="20">
+        <input type="number" id="doodleOpacityNumber" class="doodle-number-input" min="4" max="80" value="20">
+        <span class="doodle-unit">%</span>
+      </div>
     </div>
 
     <div class="theme-section-label toggle" data-target="textColorBody">
@@ -2145,6 +2284,238 @@
     const savedBg = localStorage.getItem('bgImage');
     if (savedBg) applyBackgroundImage(savedBg);
 
+    // ==================== DOODLE BACKGROUND ====================
+    const doodleLayer = document.getElementById('doodleLayer');
+    const doodleGrid = document.getElementById('doodleGrid');
+    const doodleDensityInput = document.getElementById('doodleDensityInput');
+    const doodleDensityNumber = document.getElementById('doodleDensityNumber');
+    const doodleColorInput = document.getElementById('doodleColorInput');
+    const doodleOpacityInput = document.getElementById('doodleOpacityInput');
+    const doodleOpacityNumber = document.getElementById('doodleOpacityNumber');
+
+    // Each doodle is a small SVG "tile" drawn with currentColor-like %COLOR% token,
+    // which gets swapped for the chosen doodle color, then URL-encoded into a data URI.
+    const doodlePatterns = {
+      none: { label: 'None', svg: null },
+      hearts: {
+        label: 'Hearts',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="78" height="72" viewBox="0 0 78 72">' +
+          '<g transform="translate(16,15)">' +
+          '<path d="M23 40C10 31 2 22 2 13.5 2 6.6 7.4 1 14 1c4 0 7.6 2.1 9 5.4C24.4 3.1 28 1 32 1c6.6 0 12 5.6 12 12.5C44 22 36 31 23 40z" fill="%COLOR%"/>' +
+          '</g>' +
+          '</svg>'
+      },
+      stars: {
+        label: 'Stars',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">' +
+          '<path d="M16 6l2.6 6.9L26 15l-7.4 2.1L16 24l-2.6-6.9L6 15l7.4-2.1z" fill="%COLOR%"/>' +
+          '<path d="M45 30l2 5.2L52 37l-5 1.8L45 44l-2-5.2L38 37l5-1.8z" fill="%COLOR%" opacity="0.6"/>' +
+          '<circle cx="42" cy="12" r="2" fill="%COLOR%" opacity="0.5"/>' +
+          '<circle cx="12" cy="42" r="2.4" fill="%COLOR%" opacity="0.45"/>' +
+          '</svg>'
+      },
+      clouds: {
+        label: 'Clouds',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70">' +
+          '<path d="M12 34c-3 0-5 2.3-5 5s2 5 5 5h22c2.8 0 5-2.3 5-5 0-2.4-1.7-4.4-4-4.9 0.1-0.4 0.1-0.8 0.1-1.1 0-3.6-2.9-6.5-6.5-6.5-2.5 0-4.6 1.4-5.7 3.4-1-1.2-2.5-1.9-4.2-1.9-3.1 0-5.6 2.5-5.6 5.6 0 0.1 0 0.3 0 0.4z" fill="%COLOR%" opacity="0.55"/>' +
+          '</svg>'
+      },
+      flowers: {
+        label: 'Flowers',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">' +
+          '<g fill="%COLOR%">' +
+          '<circle cx="18" cy="10" r="3.6"/><circle cx="26" cy="15" r="3.6"/><circle cx="26" cy="24" r="3.6"/>' +
+          '<circle cx="18" cy="29" r="3.6"/><circle cx="10" cy="24" r="3.6"/><circle cx="10" cy="15" r="3.6"/>' +
+          '<circle cx="18" cy="19.5" r="2.6" opacity="0.8"/>' +
+          '</g>' +
+          '<g fill="%COLOR%" opacity="0.5">' +
+          '<circle cx="47" cy="38" r="2.6"/><circle cx="53" cy="42" r="2.6"/><circle cx="53" cy="49" r="2.6"/>' +
+          '<circle cx="47" cy="53" r="2.6"/><circle cx="41" cy="49" r="2.6"/><circle cx="41" cy="42" r="2.6"/>' +
+          '<circle cx="47" cy="45.5" r="1.9"/>' +
+          '</g>' +
+          '</svg>'
+      },
+      diamonds: {
+        label: 'Diamonds',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">' +
+          '<rect x="8" y="8" width="10" height="10" transform="rotate(45 13 13)" fill="%COLOR%"/>' +
+          '<rect x="30" y="26" width="7" height="7" transform="rotate(45 33.5 29.5)" fill="%COLOR%" opacity="0.55"/>' +
+          '</svg>'
+      },
+      dots: {
+        label: 'Dots',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">' +
+          '<circle cx="8" cy="8" r="3" fill="%COLOR%"/>' +
+          '<circle cx="24" cy="22" r="2.2" fill="%COLOR%" opacity="0.55"/>' +
+          '</svg>'
+      },
+      grid: {
+        label: 'Grid',
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">' +
+          '<path d="M0 0.75H40M0 20.75H40M0.75 0V40M20.75 0V40" stroke="%COLOR%" stroke-width="1.5" opacity="0.65"/>' +
+          '</svg>'
+      },
+      
+    };
+    const DEFAULT_DOODLE = 'dots';
+    const DEFAULT_DOODLE_COLOR = '#D6336C';
+    const DEFAULT_DOODLE_SIZE = 32;
+    const DEFAULT_DOODLE_OPACITY = 20;
+
+    function svgToDataUri(svgStr, color) {
+      const withColor = svgStr.split('%COLOR%').join(color);
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(withColor);
+    }
+
+    function buildDoodlePreviewCss(key, color) {
+      const p = doodlePatterns[key];
+      if (!p || !p.svg) {
+        return { backgroundImage: 'none' };
+      }
+      return { backgroundImage: 'url("' + svgToDataUri(p.svg, color) + '")' };
+    }
+
+    function currentDoodleColor() {
+      return doodleColorInput.value || DEFAULT_DOODLE_COLOR;
+    }
+
+    function applyDoodle(key, opts) {
+      opts = opts || {};
+      const color = opts.color || currentDoodleColor();
+      const size = opts.size || parseInt(doodleDensityInput.value) || DEFAULT_DOODLE_SIZE;
+      const opacity = (opts.opacity !== undefined ? opts.opacity : parseInt(doodleOpacityInput.value));
+
+      const p = doodlePatterns[key] || doodlePatterns[DEFAULT_DOODLE];
+
+      if (!p.svg) {
+        doodleLayer.classList.add('doodle-none');
+        doodleLayer.style.backgroundImage = 'none';
+      } else {
+        doodleLayer.classList.remove('doodle-none');
+        doodleLayer.style.backgroundImage = 'url("' + svgToDataUri(p.svg, color) + '")';
+        doodleLayer.style.backgroundSize = size + 'px ' + size + 'px';
+        doodleLayer.style.opacity = (opacity / 100).toString();
+      }
+
+      localStorage.setItem('doodlePattern', key);
+      localStorage.setItem('doodleColor', color);
+      localStorage.setItem('doodleSize', size);
+      localStorage.setItem('doodleOpacity', opacity);
+
+      doodleGrid.querySelectorAll('.doodle-option').forEach(function(opt) {
+        opt.classList.toggle('selected', opt.dataset.doodle === key);
+      });
+    }
+
+    function resetDoodle() {
+      doodleColorInput.value = DEFAULT_DOODLE_COLOR;
+      doodleDensityInput.value = DEFAULT_DOODLE_SIZE;
+      doodleDensityNumber.value = DEFAULT_DOODLE_SIZE;
+      doodleOpacityInput.value = DEFAULT_DOODLE_OPACITY;
+      doodleOpacityNumber.value = DEFAULT_DOODLE_OPACITY;
+      applyDoodle(DEFAULT_DOODLE, { color: DEFAULT_DOODLE_COLOR, size: DEFAULT_DOODLE_SIZE, opacity: DEFAULT_DOODLE_OPACITY });
+      localStorage.removeItem('doodlePattern');
+      localStorage.removeItem('doodleColor');
+      localStorage.removeItem('doodleSize');
+      localStorage.removeItem('doodleOpacity');
+    }
+
+    function buildDoodleGrid() {
+      doodleGrid.innerHTML = '';
+      Object.keys(doodlePatterns).forEach(function(key) {
+        const p = doodlePatterns[key];
+        const opt = document.createElement('div');
+        opt.className = 'doodle-option';
+        opt.dataset.doodle = key;
+
+        const preview = document.createElement('div');
+        preview.className = 'doodle-swatch-preview';
+        if (p.svg) {
+          const css = buildDoodlePreviewCss(key, currentDoodleColor());
+          preview.style.backgroundImage = css.backgroundImage;
+          preview.style.backgroundSize = '20px 20px';
+        } else {
+          preview.style.backgroundImage = 'none';
+          preview.textContent = '—';
+          preview.style.display = 'flex';
+          preview.style.alignItems = 'center';
+          preview.style.justifyContent = 'center';
+          preview.style.fontSize = '14px';
+          preview.style.color = 'var(--text-muted)';
+        }
+
+        const label = document.createElement('div');
+        label.className = 'doodle-option-label';
+        label.textContent = p.label;
+
+        opt.appendChild(preview);
+        opt.appendChild(label);
+        opt.addEventListener('click', function() { applyDoodle(key); });
+        doodleGrid.appendChild(opt);
+      });
+    }
+
+    function refreshDoodlePreviews() {
+      const color = currentDoodleColor();
+      doodleGrid.querySelectorAll('.doodle-option').forEach(function(opt) {
+        const key = opt.dataset.doodle;
+        const p = doodlePatterns[key];
+        if (!p.svg) return;
+        const preview = opt.querySelector('.doodle-swatch-preview');
+        preview.style.backgroundImage = buildDoodlePreviewCss(key, color).backgroundImage;
+      });
+    }
+
+    buildDoodleGrid();
+
+    doodleColorInput.addEventListener('input', function() {
+      const activeKey = localStorage.getItem('doodlePattern') || DEFAULT_DOODLE;
+      refreshDoodlePreviews();
+      applyDoodle(activeKey, { color: doodleColorInput.value });
+    });
+
+    function clamp(val, min, max) {
+      if (isNaN(val)) return min;
+      return Math.min(max, Math.max(min, val));
+    }
+
+    doodleDensityInput.addEventListener('input', function() {
+      const activeKey = localStorage.getItem('doodlePattern') || DEFAULT_DOODLE;
+      doodleDensityNumber.value = doodleDensityInput.value;
+      applyDoodle(activeKey, { size: parseInt(doodleDensityInput.value) });
+    });
+    doodleDensityNumber.addEventListener('input', function() {
+      const activeKey = localStorage.getItem('doodlePattern') || DEFAULT_DOODLE;
+      const val = clamp(parseInt(doodleDensityNumber.value), 18, 60);
+      doodleDensityInput.value = val;
+      applyDoodle(activeKey, { size: val });
+    });
+    doodleOpacityInput.addEventListener('input', function() {
+      const activeKey = localStorage.getItem('doodlePattern') || DEFAULT_DOODLE;
+      doodleOpacityNumber.value = doodleOpacityInput.value;
+      applyDoodle(activeKey, { opacity: parseInt(doodleOpacityInput.value) });
+    });
+    doodleOpacityNumber.addEventListener('input', function() {
+      const activeKey = localStorage.getItem('doodlePattern') || DEFAULT_DOODLE;
+      const val = clamp(parseInt(doodleOpacityNumber.value), 4, 80);
+      doodleOpacityInput.value = val;
+      applyDoodle(activeKey, { opacity: val });
+    });
+
+    (function initDoodleFromStorage() {
+      const savedKey = localStorage.getItem('doodlePattern') || DEFAULT_DOODLE;
+      const savedColor = localStorage.getItem('doodleColor') || DEFAULT_DOODLE_COLOR;
+      const savedSize = parseInt(localStorage.getItem('doodleSize')) || DEFAULT_DOODLE_SIZE;
+      const savedOpacity = localStorage.getItem('doodleOpacity') !== null ? parseInt(localStorage.getItem('doodleOpacity')) : DEFAULT_DOODLE_OPACITY;
+      doodleColorInput.value = savedColor;
+      doodleDensityInput.value = savedSize;
+      doodleDensityNumber.value = savedSize;
+      doodleOpacityInput.value = savedOpacity;
+      doodleOpacityNumber.value = savedOpacity;
+      refreshDoodlePreviews();
+      applyDoodle(savedKey, { color: savedColor, size: savedSize, opacity: savedOpacity });
+    })();
+
     document.querySelectorAll('.theme-section-label.toggle').forEach(function(label) {
       const targetId = label.getAttribute('data-target');
       const content = document.getElementById(targetId);
@@ -2156,12 +2527,13 @@
 
     const resetAllOptionsBtn = document.getElementById('resetAllOptionsBtn');
     resetAllOptionsBtn.addEventListener('click', function() {
-      if (!confirm('Reset all colors, text, box style, and background image back to the default look? Your notes, checklist, calendar, and history stay untouched.')) return;
+      if (!confirm('Reset all colors, text, box style, doodles, and background image back to the default look? Your notes, checklist, calendar, and history stay untouched.')) return;
       resetAccentColor();
       resetBgColor();
       resetTextColor();
       resetCardColor();
       clearBackgroundImage();
+      resetDoodle();
       applyDarkMode(false);
       localStorage.removeItem('darkVariant');
 
@@ -2180,11 +2552,12 @@
 
     const clearAllDataBtn = document.getElementById('clearAllDataBtn');
     clearAllDataBtn.addEventListener('click', function() {
-      if (!confirm('This will erase everything saved on this device: notes, checklist, calendar events, study history, and theme settings. This can\'t be undone. Continue?')) return;
+      if (!confirm('This will erase everything saved on this device: notes, checklist, calendar events, study history, theme settings, and doodle background. This can\'t be undone. Continue?')) return;
       const keysToClear = [
         'studyMinutes', 'breakMinutes', 'notesData', 'notesText',
         'checklistItems', 'calendarEvents', 'studySessions',
-        'themeColor', 'darkMode', 'darkVariant', 'bgImage', 'cardColor', 'bgColor', 'textColor'
+        'themeColor', 'darkMode', 'darkVariant', 'bgImage', 'cardColor', 'bgColor', 'textColor',
+        'doodlePattern', 'doodleColor', 'doodleSize', 'doodleOpacity'
       ];
       keysToClear.forEach(function(k) { localStorage.removeItem(k); });
       location.reload();
