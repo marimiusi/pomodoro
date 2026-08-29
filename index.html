@@ -151,13 +151,31 @@
       margin-bottom: 12px;
     }
 
-    .quote-text {
+    .quotes-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .quotes-header h3 {
+      color: var(--accent);
       font-size: 14px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .quote-text {
+      font-size: 13px;
       color: var(--text-main);
       text-align: center;
-      line-height: 1.6;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+      font-style: italic;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #modeLabel {
@@ -1016,7 +1034,6 @@
       h1 { font-size: 34px; }
       .timer-card { padding: 28px 18px 24px; margin-bottom: 12px; }
       .stats-card { margin-bottom: 10px; padding: 16px 18px; }
-      .goal-card { margin-bottom: 10px; padding: 16px 18px; }
       .quotes-card { margin-bottom: 10px; padding: 16px 18px; }
       #display { font-size: 46px; }
       .timer-buttons button { padding: 12px 18px; font-size: 13.5px; }
@@ -1107,6 +1124,16 @@
       z-index: 5;
       white-space: nowrap;
     }
+
+    .privacy-footer {
+      max-width: 340px;
+      margin: 18px auto 0;
+      text-align: center;
+      font-size: 10.5px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      opacity: 0.75;
+    }
   </style>
 </head>
 <body>
@@ -1153,10 +1180,26 @@
       </div>
     </div>
 
-    <!-- Motivation Quote -->
+    <!-- Quotes Section -->
     <div class="quotes-card">
-      <div class="quote-text" id="quoteDisplay">You've got this! 💪</div>
+      <div class="quotes-header">
+        <h3>Daily Motivation</h3>
+        <button id="editQuoteBtn" class="edit-btn" title="Edit motivation">✎</button>
+      </div>
+
+      <div id="quoteDisplayView">
+        <div class="quote-text" id="quoteDisplay">You've got this! 💪</div>
+      </div>
+
+      <div id="quoteEditView" style="display: none;">
+        <div class="goal-input-row">
+          <input type="text" id="quoteEditInput" placeholder="Your motivation...">
+          <button id="saveQuoteBtn">Save</button>
+        </div>
+      </div>
     </div>
+
+    <div class="privacy-footer">Everything here — notes, checklist, calendar, and history — is saved only in this browser, on this device. Nothing is uploaded or synced, so it isn't visible from any other browser or device.</div>
   </div>
 
   <div class="watermark">by @marimiusi</div>
@@ -1168,6 +1211,7 @@
     <div class="side-tab" id="calendarTab">Calendar</div>
     <div class="side-tab" id="reportTab">Report</div>
     <div class="side-tab" id="themeTab">Theme</div>
+    <div class="side-tab" id="resetTab">Reset</div>
   </div>
 
   <!-- Notes panel -->
@@ -1383,10 +1427,20 @@
     </div>
 
     <button id="resetAllOptionsBtn" class="reset-all-btn">Reset all options</button>
+  </div>
 
-    <div class="theme-section-label">Privacy</div>
-    <div class="empty-hint">Everything here — notes, checklist, calendar, and history — is saved only in this browser, on this device. Nothing is uploaded or synced, so it isn't visible from any other browser or device.</div>
-    <button id="clearAllDataBtn" class="secondary" style="margin-top:10px;">Clear all my data on this device</button>
+  <!-- Reset panel -->
+  <div class="side-panel" id="resetPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="resetPanel" title="Close">‹</button>
+      <h3>Reset</h3>
+    </div>
+
+    <div class="theme-section-label">⚠ Warning</div>
+    <div class="empty-hint" style="font-style: normal; line-height: 1.5;">
+      This erases <strong>everything</strong> saved on this device — your notes, checklist, calendar events, study history, daily motivation, and theme settings. This cannot be undone, and nothing is backed up anywhere else.
+    </div>
+    <button id="clearAllDataBtn" class="reset-all-btn" style="margin-top:18px;">Erase everything on this device</button>
   </div>
 
   <script>
@@ -1541,9 +1595,67 @@
       return h + 'h' + (m ? ' ' + m + 'm' : '');
     }
 
-    // ==================== QUICK STATS ====================
+    // ==================== QUICK STATS & DAILY MOTIVATION ====================
     const quickStatToday = document.getElementById('quickStatToday');
     const quickStatSessions = document.getElementById('quickStatSessions');
+
+    const editQuoteBtn = document.getElementById('editQuoteBtn');
+    const saveQuoteBtn = document.getElementById('saveQuoteBtn');
+    const quoteEditInput = document.getElementById('quoteEditInput');
+    const quoteDisplayView = document.getElementById('quoteDisplayView');
+    const quoteEditView = document.getElementById('quoteEditView');
+    const quoteDisplay = document.getElementById('quoteDisplay');
+
+    const DEFAULT_QUOTE = "You've got this! 💪";
+
+    function getQuote() {
+      return localStorage.getItem('dailyQuote') || DEFAULT_QUOTE;
+    }
+    function saveQuote(text) {
+      localStorage.setItem('dailyQuote', text);
+    }
+    function renderQuote() {
+      quoteDisplay.textContent = getQuote();
+    }
+
+    editQuoteBtn.addEventListener('click', function() {
+      quoteEditInput.value = getQuote();
+      quoteDisplayView.style.display = 'none';
+      quoteEditView.style.display = 'block';
+      quoteEditInput.focus();
+    });
+
+    saveQuoteBtn.addEventListener('click', function() {
+      const text = quoteEditInput.value.trim();
+      saveQuote(text === '' ? DEFAULT_QUOTE : text);
+      renderQuote();
+      quoteDisplayView.style.display = 'block';
+      quoteEditView.style.display = 'none';
+    });
+
+    quoteEditInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') saveQuoteBtn.click();
+    });
+
+    renderQuote();
+
+    function getStudySessions() {
+      const stored = localStorage.getItem('studySessions');
+      return stored ? JSON.parse(stored) : [];
+    }
+    function saveStudySessions(sessions) {
+      localStorage.setItem('studySessions', JSON.stringify(sessions));
+    }
+    function logStudySession(minutes) {
+      const now = new Date();
+      const sessions = getStudySessions();
+      sessions.push({
+        date: dateKey(now.getFullYear(), now.getMonth(), now.getDate()),
+        minutes: minutes,
+        id: 's-' + Date.now() + Math.random().toString(36).slice(2)
+      });
+      saveStudySessions(sessions);
+    }
 
     function updateQuickStats() {
       const sessions = getStudySessions();
@@ -1566,24 +1678,6 @@
     // Initialize
     updateQuickStats();
 
-    function getStudySessions() {
-      const stored = localStorage.getItem('studySessions');
-      return stored ? JSON.parse(stored) : [];
-    }
-    function saveStudySessions(sessions) {
-      localStorage.setItem('studySessions', JSON.stringify(sessions));
-    }
-    function logStudySession(minutes) {
-      const now = new Date();
-      const sessions = getStudySessions();
-      sessions.push({
-        date: dateKey(now.getFullYear(), now.getMonth(), now.getDate()),
-        minutes: minutes,
-        id: 's-' + Date.now() + Math.random().toString(36).slice(2)
-      });
-      saveStudySessions(sessions);
-    }
-
     const notesTab = document.getElementById('notesTab');
     const notesPanel = document.getElementById('notesPanel');
     const checklistTab = document.getElementById('checklistTab');
@@ -1594,6 +1688,8 @@
     const reportPanel = document.getElementById('reportPanel');
     const themeTab = document.getElementById('themeTab');
     const themePanel = document.getElementById('themePanel');
+    const resetTab = document.getElementById('resetTab');
+    const resetPanel = document.getElementById('resetPanel');
 
     function closeAllPanels() {
       notesPanel.classList.remove('open');
@@ -1601,6 +1697,7 @@
       calendarPanel.classList.remove('open');
       reportPanel.classList.remove('open');
       themePanel.classList.remove('open');
+      resetPanel.classList.remove('open');
     }
 
     function wireTab(tab, panel) {
@@ -1615,6 +1712,7 @@
     wireTab(checklistTab, checklistPanel);
     wireTab(calendarTab, calendarPanel);
     wireTab(themeTab, themePanel);
+    wireTab(resetTab, resetPanel);
 
     reportTab.addEventListener('click', function() {
       const wasOpen = reportPanel.classList.contains('open');
@@ -2659,7 +2757,7 @@
       if (!confirm('This will erase everything saved on this device: notes, checklist, calendar events, study history, theme settings, and doodle background. This can\'t be undone. Continue?')) return;
       const keysToClear = [
         'studyMinutes', 'breakMinutes', 'notesData', 'notesText',
-        'checklistItems', 'calendarEvents', 'studySessions',
+        'checklistItems', 'calendarEvents', 'studySessions', 'dailyQuote', 'customQuotes',
         'themeColor', 'darkMode', 'darkVariant', 'bgImage', 'cardColor', 'bgColor', 'textColor',
         'doodlePattern', 'doodleColor', 'doodleSize', 'doodleOpacity'
       ];
