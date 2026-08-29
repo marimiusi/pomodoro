@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tara, Aral Tayo?</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: 'Taste Bread';
+      src: url('fonts/Taste Bread.otf') format('opentype');
+    }
+
+    :root {
+      --accent: #D6336C;
+      --accent-dark: #C2185B;
+      --accent-light: #FBD3E2;
+      --accent-pale: #FFE7EF;
+      --bg-card: #FFFFFF;
+      --bg-panel: #FFF9FB;
+      --text-main: #4A2438;
+      --text-muted: #8A5A70;
+      --input-bg: #FFFFFF;
+    }
+
+    body.dark-mode {
+      --bg-card: #241A21;
+      --bg-panel: #1C1418;
+      --text-main: #F3E6ED;
+      --text-muted: #C9A8BB;
+      --input-bg: #2E2129;
+      --accent-pale: #2A1C22;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(160deg, var(--accent-pale) 0%, #FFF9FB 45%, var(--accent-pale) 100%);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-main);
+      margin: 0;
+      min-height: 100vh;
+      padding: 50px 20px 80px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: linear-gradient(160deg, var(--accent-pale) 0%, #14100F 45%, var(--accent-pale) 100%);
+    }
+
+    .page {
+      max-width: 420px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      opacity: 0.75;
+    }
+
+    h1 {
+      font-family: 'Taste Bread', cursive;
+      color: var(--accent);
+      font-size: 42px;
+      font-weight: 400;
+      margin: 8px 0 4px;
+      line-height: 1.2;
+    }
+
+    .squiggle {
+      width: 70px;
+      height: 10px;
+      margin: 0 auto 30px;
+      border-bottom: 3px solid var(--accent-light);
+      border-radius: 50%;
+    }
+
+    /* ---------- Timer card ---------- */
+    .timer-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 36px 24px 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      position: relative;
+      animation: floatIn 0.5s ease both;
+    }
+
+    .timer-card::before {
+      content: "✿";
+      position: absolute;
+      top: -18px;
+      left: -14px;
+      font-size: 30px;
+      color: var(--accent-light);
+      transform: rotate(-15deg);
+    }
+
+    #modeLabel {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      opacity: 0.75;
+      margin-bottom: 6px;
+    }
+    #modeLabel.break-mode { color: #2F8F55; opacity: 1; }
+
+    #display {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 0 0 20px;
+      letter-spacing: 0.02em;
+      transition: color 0.3s ease;
+    }
+    #display.break-mode { color: #3E9C64; }
+
+    .timer-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      transition: transform 0.15s ease, background 0.15s ease, filter 0.15s ease;
+    }
+    button:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+    button:active { transform: translateY(0); }
+    button.secondary {
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      box-shadow: none;
+    }
+    button.secondary:hover { filter: brightness(0.95); background: var(--accent-light); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ---------- Settings ---------- */
+    .settings-row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      border-top: 1.5px dashed var(--accent-light);
+      padding-top: 18px;
+      margin-top: 4px;
+    }
+    .setting-field {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .setting-field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-dark);
+      opacity: 0.85;
+      font-weight: 600;
+    }
+    .setting-field input {
+      width: 60px;
+      text-align: center;
+      padding: 6px 4px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-main);
+      background: var(--input-bg);
+    }
+    .setting-field input:focus { outline: none; border-color: var(--accent); }
+    .setting-field input:disabled { background: var(--accent-pale); color: var(--text-muted); }
+
+    /* ---------- Side tabs ---------- */
+    .tabs-container {
+      position: fixed;
+      top: 100px;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .side-tab {
+      background: var(--accent);
+      color: white;
+      padding: 14px 9px;
+      border-radius: 12px 0 0 12px;
+      cursor: pointer;
+      writing-mode: vertical-rl;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.18);
+      transition: padding-right 0.2s ease, background 0.2s ease;
+    }
+    .side-tab:hover { padding-right: 13px; }
+
+    .side-panel {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100%;
+      background: var(--bg-panel);
+      box-shadow: -6px 0 24px rgba(0, 0, 0, 0.15);
+      padding: 22px 22px 28px;
+      box-sizing: border-box;
+      text-align: left;
+      transition: right 0.3s ease, background 0.3s ease;
+      z-index: 20;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      color: var(--text-main);
+    }
+    .side-panel.open { right: 0; }
+
+    /* ---------- Panel header / back button ---------- */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .back-btn {
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .back-btn:hover { background: var(--accent-light); filter: brightness(0.95); }
+
+    .side-panel h3 {
+      color: var(--accent);
+      margin: 0;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sub-back-btn {
+      background: none;
+      color: var(--accent-dark);
+      box-shadow: none;
+      padding: 4px 0 10px;
+      font-size: 12.5px;
+      text-decoration: underline;
+      display: block;
+    }
+    .sub-back-btn:hover { background: none; filter: none; opacity: 0.75; }
+
+    /* ---------- Notes panel ---------- */
+    #notesPanel { padding-bottom: 22px; }
+    #notesPanelBody { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+
+    .new-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .new-row input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 10px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      background: var(--input-bg);
+      color: var(--text-main);
+    }
+    .new-row input[type="text"]:focus { outline: none; border-color: var(--accent); }
+    .new-row button {
+      padding: 8px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
+    ul.nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      overflow-y: auto;
+      flex: 1;
+    }
+    ul.nav-list li {
+      background: var(--bg-card);
+      padding: 11px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      color: var(--text-main);
+    }
+    ul.nav-list li:hover { background: var(--accent-pale); }
+    ul.nav-list li .item-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    ul.nav-list li .item-label .icon { flex-shrink: 0; opacity: 0.8; }
+    ul.nav-list li .item-label .item-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    ul.nav-list li .item-label .item-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .empty-hint {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    .delete-btn {
+      background: none;
+      color: var(--accent-dark);
+      box-shadow: none;
+      padding: 2px 6px;
+      font-size: 15px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .delete-btn:hover { background: var(--accent-pale); }
+
+    #noteTitleInput {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: var(--input-bg);
+      margin-bottom: 10px;
+    }
+    #noteTitleInput:focus { outline: none; border-color: var(--accent); }
+
+    #noteContentTextarea {
+      width: 100%;
+      flex: 1;
+      min-height: 260px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-main);
+      background: var(--input-bg);
+      resize: none;
+    }
+    #noteContentTextarea:focus { outline: none; border-color: var(--accent); }
+
+    #noteEditorView, #notesListView, #notesFolderView {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* ---------- Checklist panel ---------- */
+    #checklistInput {
+      width: 68%;
+      padding: 8px 10px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      background: var(--input-bg);
+      color: var(--text-main);
+    }
+    #checklistInput:focus { outline: none; border-color: var(--accent); }
+
+    #addItemBtn {
+      padding: 8px 14px;
+      font-size: 13px;
+      box-shadow: none;
+    }
+
+    #checklistList {
+      list-style: none;
+      padding: 0;
+      margin-top: 18px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    #checklistList li {
+      background: var(--bg-card);
+      padding: 9px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      color: var(--text-main);
+    }
+    #checklistList li .task-text {
+      flex: 1;
+      word-break: break-word;
+    }
+    #checklistList li.done .task-text {
+      text-decoration: line-through;
+      text-decoration-color: var(--accent);
+      text-decoration-thickness: 1.5px;
+      opacity: 0.55;
+    }
+
+    /* ---------- Calendar panel ---------- */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .cal-header button {
+      padding: 4px 10px;
+      font-size: 13px;
+      box-shadow: none;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+    }
+    #calMonthLabel {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 14px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+    .cal-dow {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-dark);
+      opacity: 0.85;
+      padding-bottom: 4px;
+    }
+    .cal-day {
+      font-size: 12.5px;
+      padding: 7px 0;
+      border-radius: 8px;
+      color: var(--text-main);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .cal-day:hover { background: var(--accent-pale); }
+    .cal-day.empty { visibility: hidden; cursor: default; }
+    .cal-day.empty:hover { background: none; }
+    .cal-day.today {
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+    .cal-day.selected {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+    }
+    .cal-day .event-dot {
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent-dark);
+    }
+    .cal-day.selected .event-dot { background: white; }
+
+    /* ---------- Day events section ---------- */
+    #dayEventsSection {
+      margin-top: 20px;
+      border-top: 1.5px dashed var(--accent-light);
+      padding-top: 16px;
+      overflow-y: auto;
+    }
+    #selectedDateLabel {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-dark);
+      margin-bottom: 10px;
+    }
+    .event-input-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    #eventInput {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1.5px solid var(--accent-light);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      min-width: 0;
+      background: var(--input-bg);
+      color: var(--text-main);
+    }
+    #eventInput:focus { outline: none; border-color: var(--accent); }
+    #addEventBtn {
+      padding: 8px 14px;
+      font-size: 13px;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+    #eventList {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0 0;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    #eventList li {
+      background: var(--bg-card);
+      padding: 9px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      color: var(--text-main);
+    }
+    #eventList li span.event-text {
+      flex: 1;
+      word-break: break-word;
+    }
+    #noEventsMsg {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    .dark-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0 14px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--accent-light);
+      border-radius: 999px;
+      transition: background 0.2s ease;
+    }
+    .switch-slider::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+    .switch input:checked + .switch-slider { background: var(--accent); }
+    .switch input:checked + .switch-slider::before { transform: translateX(18px); }
+
+    /* ---------- Theme panel ---------- */
+    .swatch-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+    .swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .swatch:hover { transform: scale(1.1); }
+    .swatch.selected { border-color: #4A2438; }
+
+    .theme-section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-dark);
+      opacity: 0.85;
+      font-weight: 700;
+      margin: 18px 0 6px;
+    }
+
+    .custom-color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .custom-color-row input[type="color"] {
+      width: 44px;
+      height: 34px;
+      border: none;
+      border-radius: 8px;
+      padding: 0;
+      cursor: pointer;
+      background: none;
+    }
+
+    #bgFileLabel {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #bgFileInput { display: none; }
+
+    #removeBgBtn {
+      background: none;
+      color: var(--accent-dark);
+      box-shadow: none;
+      text-decoration: underline;
+      padding: 8px 4px;
+      font-size: 12.5px;
+    }
+
+    #resetThemeBtn {
+      background: none;
+      color: var(--accent-dark);
+      box-shadow: none;
+      text-decoration: underline;
+      padding: 4px;
+      font-size: 12.5px;
+      margin-top: 16px;
+    }
+
+    /* ---------- Report panel ---------- */
+    .report-stats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .stat-box {
+      flex: 1;
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px 6px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    .stat-value {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 90px;
+      margin: 10px 0 20px;
+      padding: 0 2px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      gap: 5px;
+    }
+    .bar-fill {
+      width: 100%;
+      max-width: 22px;
+      background: var(--accent);
+      border-radius: 5px 5px 2px 2px;
+      min-height: 3px;
+      transition: height 0.25s ease;
+    }
+    .bar-day-label {
+      font-size: 9.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    #sessionListUl li { cursor: default; }
+    #sessionListUl li:hover { background: var(--bg-card); }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <div class="eyebrow">Study Timer</div>
+    <h1>tara, aral tayo?</h1>
+    <div class="squiggle"></div>
+
+    <div class="timer-card">
+      <div id="modeLabel">Study Time</div>
+      <p id="display">25:00</p>
+
+      <div class="timer-buttons">
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn" class="secondary" disabled>Pause</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="setting-field">
+          <label for="studyMinInput">Study (min)</label>
+          <input type="number" id="studyMinInput" min="1" max="180" value="25">
+        </div>
+        <div class="setting-field">
+          <label for="breakMinInput">Break (min)</label>
+          <input type="number" id="breakMinInput" min="1" max="60" value="5">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side tabs -->
+  <div class="tabs-container">
+    <div class="side-tab" id="notesTab">Notes</div>
+    <div class="side-tab" id="checklistTab">Checklist</div>
+    <div class="side-tab" id="calendarTab">Calendar</div>
+    <div class="side-tab" id="reportTab">Report</div>
+    <div class="side-tab" id="themeTab">Theme</div>
+  </div>
+
+  <!-- Notes panel -->
+  <div class="side-panel" id="notesPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="notesPanel" title="Close">‹</button>
+      <h3 id="notesHeaderText">Notes</h3>
+    </div>
+
+    <div id="notesPanelBody">
+      <!-- Folder list view -->
+      <div id="notesFolderView">
+        <div class="new-row">
+          <input type="text" id="newFolderInput" placeholder="New folder name...">
+          <button id="addFolderBtn">+</button>
+        </div>
+        <ul class="nav-list" id="folderListUl"></ul>
+        <div class="empty-hint" id="folderEmptyHint" style="display:none;">No folders yet — make one above.</div>
+      </div>
+
+      <!-- Notes-in-folder view -->
+      <div id="notesListView" style="display:none;">
+        <button class="sub-back-btn" id="folderBackBtn">‹ All folders</button>
+        <div class="new-row">
+          <input type="text" id="newNoteInput" placeholder="New note title...">
+          <button id="addNoteBtn">+</button>
+        </div>
+        <ul class="nav-list" id="noteListUl"></ul>
+        <div class="empty-hint" id="noteEmptyHint" style="display:none;">No notes in this folder yet.</div>
+      </div>
+
+      <!-- Note editor view -->
+      <div id="noteEditorView" style="display:none;">
+        <button class="sub-back-btn" id="noteBackBtn">‹ Back to folder</button>
+        <input type="text" id="noteTitleInput" placeholder="Title">
+        <textarea id="noteContentTextarea" placeholder="Write here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist panel -->
+  <div class="side-panel" id="checklistPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="checklistPanel" title="Close">‹</button>
+      <h3>Checklist</h3>
+    </div>
+    <div class="new-row">
+      <input type="text" id="checklistInput" placeholder="Add item...">
+      <button id="addItemBtn">Add</button>
+    </div>
+    <ul id="checklistList"></ul>
+  </div>
+
+  <!-- Calendar panel -->
+  <div class="side-panel" id="calendarPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="calendarPanel" title="Close">‹</button>
+      <h3>Calendar</h3>
+    </div>
+    <div class="cal-header">
+      <button id="prevMonthBtn">‹</button>
+      <span id="calMonthLabel"></span>
+      <button id="nextMonthBtn">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div id="dayEventsSection">
+      <div id="selectedDateLabel"></div>
+      <div class="event-input-row">
+        <input type="text" id="eventInput" placeholder="Add event...">
+        <button id="addEventBtn">Add</button>
+      </div>
+      <ul id="eventList"></ul>
+      <div id="noEventsMsg" style="display:none;">No events yet for this day.</div>
+    </div>
+  </div>
+
+  <!-- Report panel -->
+  <div class="side-panel" id="reportPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="reportPanel" title="Close">‹</button>
+      <h3>Report</h3>
+    </div>
+
+    <div class="report-stats">
+      <div class="stat-box">
+        <div class="stat-value" id="statToday">0m</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="statWeek">0m</div>
+        <div class="stat-label">Last 7 days</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="statAll">0m</div>
+        <div class="stat-label">All time</div>
+      </div>
+    </div>
+
+    <div class="theme-section-label">Last 7 days</div>
+    <div class="bar-chart" id="barChart"></div>
+
+    <div class="theme-section-label">Sessions</div>
+    <ul class="nav-list" id="sessionListUl"></ul>
+    <div class="empty-hint" id="sessionEmptyHint" style="display:none;">No study sessions logged yet — finish a study timer to see it here.</div>
+
+    <button id="clearHistoryBtn" class="secondary" style="margin-top:14px;">Clear history</button>
+  </div>
+
+  <!-- Theme panel -->
+  <div class="side-panel" id="themePanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="themePanel" title="Close">‹</button>
+      <h3>Theme</h3>
+    </div>
+
+    <div class="theme-section-label">Appearance</div>
+    <div class="dark-toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="darkModeToggle">
+        <span class="switch-slider"></span>
+      </label>
+      <span style="font-size:13px;">Dark mode</span>
+    </div>
+
+    <div class="theme-section-label">Color</div>
+    <div class="swatch-row" id="swatchRow"></div>
+
+    <div class="custom-color-row">
+      <input type="color" id="customColorInput" value="#D6336C">
+      <span style="font-size:12.5px;">Pick your own</span>
+    </div>
+
+    <button id="resetThemeBtn">Reset to default pink</button>
+
+    <div class="theme-section-label">Background image</div>
+    <label id="bgFileLabel" for="bgFileInput">Upload photo</label>
+    <input type="file" id="bgFileInput" accept="image/*">
+    <br>
+    <button id="removeBgBtn">Remove background photo</button>
+
+    <div class="theme-section-label">Privacy</div>
+    <div class="empty-hint">Everything here — notes, checklist, calendar, and history — is saved only in this browser, on this device. Nothing is uploaded or synced, so it isn't visible from any other browser or device.</div>
+    <button id="clearAllDataBtn" class="secondary" style="margin-top:10px;">Clear all my data on this device</button>
+  </div>
+
+  <script>
+    // ==================== TIMER (Pomodoro) ====================
+    const display = document.getElementById('display');
+    const modeLabel = document.getElementById('modeLabel');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const studyMinInput = document.getElementById('studyMinInput');
+    const breakMinInput = document.getElementById('breakMinInput');
+
+    let studyMinutes = parseInt(localStorage.getItem('studyMinutes')) || 25;
+    let breakMinutes = parseInt(localStorage.getItem('breakMinutes')) || 5;
+    studyMinInput.value = studyMinutes;
+    breakMinInput.value = breakMinutes;
+
+    let mode = 'study';
+    let secondsLeft = studyMinutes * 60;
+    let timerInterval = null;
+    let running = false;
+
+    function currentModeMinutes() {
+      return mode === 'study' ? studyMinutes : breakMinutes;
+    }
+
+    function updateDisplay() {
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      const secondsPadded = seconds.toString().padStart(2, '0');
+      display.textContent = minutes + ":" + secondsPadded;
+    }
+
+    function updateModeLabel() {
+      if (mode === 'study') {
+        modeLabel.textContent = 'Study Time';
+        modeLabel.classList.remove('break-mode');
+        display.classList.remove('break-mode');
+      } else {
+        modeLabel.textContent = 'Break Time';
+        modeLabel.classList.add('break-mode');
+        display.classList.add('break-mode');
+      }
+    }
+
+    function setButtonsRunning(isRunning) {
+      startBtn.disabled = isRunning;
+      pauseBtn.disabled = !isRunning;
+      studyMinInput.disabled = isRunning;
+      breakMinInput.disabled = isRunning;
+    }
+
+    function switchMode() {
+      if (mode === 'study') {
+        logStudySession(studyMinutes);
+      }
+      mode = mode === 'study' ? 'break' : 'study';
+      secondsLeft = currentModeMinutes() * 60;
+      updateModeLabel();
+      updateDisplay();
+    }
+
+    startBtn.addEventListener('click', function() {
+      running = true;
+      setButtonsRunning(true);
+      timerInterval = setInterval(function() {
+        secondsLeft = secondsLeft - 1;
+        updateDisplay();
+        if (secondsLeft <= 0) {
+          switchMode();
+        }
+      }, 1000);
+    });
+
+    pauseBtn.addEventListener('click', function() {
+      running = false;
+      clearInterval(timerInterval);
+      setButtonsRunning(false);
+    });
+
+    resetBtn.addEventListener('click', function() {
+      running = false;
+      clearInterval(timerInterval);
+      setButtonsRunning(false);
+      mode = 'study';
+      secondsLeft = studyMinutes * 60;
+      updateModeLabel();
+      updateDisplay();
+    });
+
+    studyMinInput.addEventListener('input', function() {
+      const val = parseInt(studyMinInput.value);
+      if (!val || val < 1) return;
+      studyMinutes = val;
+      localStorage.setItem('studyMinutes', studyMinutes);
+      if (mode === 'study' && !running) {
+        secondsLeft = studyMinutes * 60;
+        updateDisplay();
+      }
+    });
+
+    breakMinInput.addEventListener('input', function() {
+      const val = parseInt(breakMinInput.value);
+      if (!val || val < 1) return;
+      breakMinutes = val;
+      localStorage.setItem('breakMinutes', breakMinutes);
+      if (mode === 'break' && !running) {
+        secondsLeft = breakMinutes * 60;
+        updateDisplay();
+      }
+    });
+
+    updateDisplay();
+    updateModeLabel();
+
+    // ==================== STUDY SESSION LOGGING ====================
+    function getStudySessions() {
+      const stored = localStorage.getItem('studySessions');
+      return stored ? JSON.parse(stored) : [];
+    }
+    function saveStudySessions(sessions) {
+      localStorage.setItem('studySessions', JSON.stringify(sessions));
+    }
+    function logStudySession(minutes) {
+      const now = new Date();
+      const sessions = getStudySessions();
+      sessions.push({
+        date: dateKey(now.getFullYear(), now.getMonth(), now.getDate()),
+        minutes: minutes,
+        id: 's-' + Date.now() + Math.random().toString(36).slice(2)
+      });
+      saveStudySessions(sessions);
+    }
+
+    // ==================== SIDE TABS ====================
+    const notesTab = document.getElementById('notesTab');
+    const notesPanel = document.getElementById('notesPanel');
+    const checklistTab = document.getElementById('checklistTab');
+    const checklistPanel = document.getElementById('checklistPanel');
+    const calendarTab = document.getElementById('calendarTab');
+    const calendarPanel = document.getElementById('calendarPanel');
+    const reportTab = document.getElementById('reportTab');
+    const reportPanel = document.getElementById('reportPanel');
+    const themeTab = document.getElementById('themeTab');
+    const themePanel = document.getElementById('themePanel');
+
+    function closeAllPanels() {
+      notesPanel.classList.remove('open');
+      checklistPanel.classList.remove('open');
+      calendarPanel.classList.remove('open');
+      reportPanel.classList.remove('open');
+      themePanel.classList.remove('open');
+    }
+
+    function wireTab(tab, panel) {
+      tab.addEventListener('click', function() {
+        const wasOpen = panel.classList.contains('open');
+        closeAllPanels();
+        if (!wasOpen) panel.classList.add('open');
+      });
+    }
+
+    wireTab(notesTab, notesPanel);
+    wireTab(checklistTab, checklistPanel);
+    wireTab(calendarTab, calendarPanel);
+    wireTab(themeTab, themePanel);
+
+    reportTab.addEventListener('click', function() {
+      const wasOpen = reportPanel.classList.contains('open');
+      closeAllPanels();
+      if (!wasOpen) {
+        reportPanel.classList.add('open');
+        renderReport();
+      }
+    });
+
+    // Back buttons in each panel header just close the panel
+    document.querySelectorAll('.back-btn').forEach(function(btn) {
+      btn.addEventListener('click', closeAllPanels);
+    });
+
+    // ==================== NOTES (folders + notes) ====================
+    const notesHeaderText = document.getElementById('notesHeaderText');
+    const notesFolderView = document.getElementById('notesFolderView');
+    const notesListView = document.getElementById('notesListView');
+    const noteEditorView = document.getElementById('noteEditorView');
+
+    const newFolderInput = document.getElementById('newFolderInput');
+    const addFolderBtn = document.getElementById('addFolderBtn');
+    const folderListUl = document.getElementById('folderListUl');
+    const folderEmptyHint = document.getElementById('folderEmptyHint');
+
+    const folderBackBtn = document.getElementById('folderBackBtn');
+    const newNoteInput = document.getElementById('newNoteInput');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const noteListUl = document.getElementById('noteListUl');
+    const noteEmptyHint = document.getElementById('noteEmptyHint');
+
+    const noteBackBtn = document.getElementById('noteBackBtn');
+    const noteTitleInput = document.getElementById('noteTitleInput');
+    const noteContentTextarea = document.getElementById('noteContentTextarea');
+
+    function getNotesData() {
+      const stored = localStorage.getItem('notesData');
+      if (stored) return JSON.parse(stored);
+
+      // Migrate the old single-textarea note, if it exists, into a folder
+      const oldNote = localStorage.getItem('notesText');
+      const data = { folders: [] };
+      if (oldNote && oldNote.trim() !== '') {
+        data.folders.push({
+          id: 'f-' + Date.now(),
+          name: 'General',
+          notes: [{ id: 'n-' + Date.now(), title: 'Old note', content: oldNote }]
+        });
+        localStorage.removeItem('notesText');
+        saveNotesData(data);
+      }
+      return data;
+    }
+    function saveNotesData(data) {
+      localStorage.setItem('notesData', JSON.stringify(data));
+    }
+
+    let currentFolderId = null;
+    let currentNoteId = null;
+
+    function showNotesView(viewName) {
+      notesFolderView.style.display = viewName === 'folders' ? 'flex' : 'none';
+      notesListView.style.display = viewName === 'notes' ? 'flex' : 'none';
+      noteEditorView.style.display = viewName === 'editor' ? 'flex' : 'none';
+    }
+
+    function findFolder(data, folderId) {
+      return data.folders.find(function(f) { return f.id === folderId; });
+    }
+
+    function renderFolderList() {
+      const data = getNotesData();
+      notesHeaderText.textContent = 'Notes';
+      folderListUl.innerHTML = '';
+      folderEmptyHint.style.display = data.folders.length === 0 ? 'block' : 'none';
+      data.folders.forEach(function(folder) {
+        const li = document.createElement('li');
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'item-label';
+        labelDiv.innerHTML = '<span class="icon">📁</span><span class="item-name">' +
+          escapeHtml(folder.name) + '</span><span class="item-sub">' + folder.notes.length + '</span>';
+        labelDiv.addEventListener('click', function() {
+          currentFolderId = folder.id;
+          renderNoteList();
+          showNotesView('notes');
+        });
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('Delete "' + folder.name + '" and all its notes?')) return;
+          const d = getNotesData();
+          d.folders = d.folders.filter(function(f) { return f.id !== folder.id; });
+          saveNotesData(d);
+          renderFolderList();
+        });
+        li.appendChild(labelDiv);
+        li.appendChild(delBtn);
+        folderListUl.appendChild(li);
+      });
+    }
+
+    function renderNoteList() {
+      const data = getNotesData();
+      const folder = findFolder(data, currentFolderId);
+      if (!folder) { showNotesView('folders'); renderFolderList(); return; }
+      notesHeaderText.textContent = folder.name;
+      noteListUl.innerHTML = '';
+      noteEmptyHint.style.display = folder.notes.length === 0 ? 'block' : 'none';
+      folder.notes.forEach(function(note) {
+        const li = document.createElement('li');
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'item-label';
+        labelDiv.innerHTML = '<span class="icon">📝</span><span class="item-name">' +
+          escapeHtml(note.title || 'Untitled') + '</span>';
+        labelDiv.addEventListener('click', function() {
+          currentNoteId = note.id;
+          noteTitleInput.value = note.title;
+          noteContentTextarea.value = note.content;
+          showNotesView('editor');
+        });
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (!confirm('Delete this note?')) return;
+          const d = getNotesData();
+          const f = findFolder(d, currentFolderId);
+          f.notes = f.notes.filter(function(n) { return n.id !== note.id; });
+          saveNotesData(d);
+          renderNoteList();
+        });
+        li.appendChild(labelDiv);
+        li.appendChild(delBtn);
+        noteListUl.appendChild(li);
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    addFolderBtn.addEventListener('click', function() {
+      const name = newFolderInput.value.trim();
+      if (name === '') return;
+      const data = getNotesData();
+      data.folders.push({ id: 'f-' + Date.now() + Math.random().toString(36).slice(2), name: name, notes: [] });
+      saveNotesData(data);
+      newFolderInput.value = '';
+      renderFolderList();
+    });
+    newFolderInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') addFolderBtn.click();
+    });
+
+    folderBackBtn.addEventListener('click', function() {
+      currentFolderId = null;
+      showNotesView('folders');
+      renderFolderList();
+    });
+
+    addNoteBtn.addEventListener('click', function() {
+      const title = newNoteInput.value.trim();
+      if (title === '') return;
+      const data = getNotesData();
+      const folder = findFolder(data, currentFolderId);
+      if (!folder) return;
+      folder.notes.push({ id: 'n-' + Date.now() + Math.random().toString(36).slice(2), title: title, content: '' });
+      saveNotesData(data);
+      newNoteInput.value = '';
+      renderNoteList();
+    });
+    newNoteInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') addNoteBtn.click();
+    });
+
+    noteBackBtn.addEventListener('click', function() {
+      currentNoteId = null;
+      showNotesView('notes');
+      renderNoteList();
+    });
+
+    function saveCurrentNote() {
+      if (!currentFolderId || !currentNoteId) return;
+      const data = getNotesData();
+      const folder = findFolder(data, currentFolderId);
+      if (!folder) return;
+      const note = folder.notes.find(function(n) { return n.id === currentNoteId; });
+      if (!note) return;
+      note.title = noteTitleInput.value.trim() || 'Untitled';
+      note.content = noteContentTextarea.value;
+      saveNotesData(data);
+    }
+
+    noteTitleInput.addEventListener('input', saveCurrentNote);
+    noteContentTextarea.addEventListener('input', saveCurrentNote);
+
+    // Initial notes view
+    renderFolderList();
+    showNotesView('folders');
+
+    // ==================== CHECKLIST ====================
+    const checklistInput = document.getElementById('checklistInput');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const checklistList = document.getElementById('checklistList');
+
+    function getSavedItems() {
+      const stored = localStorage.getItem('checklistItems');
+      return stored ? JSON.parse(stored) : [];
+    }
+    function saveItems(items) {
+      localStorage.setItem('checklistItems', JSON.stringify(items));
+    }
+    function renderChecklist() {
+      const items = getSavedItems();
+      checklistList.innerHTML = '';
+      items.forEach(function(item) {
+        const li = document.createElement('li');
+        if (item.checked) li.classList.add('done');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = item.checked;
+        checkbox.addEventListener('change', function() {
+          const all = getSavedItems();
+          const match = all.find(function(i) { return i.id === item.id; });
+          if (match) match.checked = checkbox.checked;
+          saveItems(all);
+          renderChecklist();
+        });
+
+        const span = document.createElement('span');
+        span.className = 'task-text';
+        span.textContent = item.text;
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', function() {
+          const all = getSavedItems().filter(function(i) { return i.id !== item.id; });
+          saveItems(all);
+          renderChecklist();
+        });
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        checklistList.appendChild(li);
+      });
+    }
+    // Migrate old items that may not have an id yet
+    (function migrateChecklist() {
+      const items = getSavedItems();
+      let changed = false;
+      items.forEach(function(item) {
+        if (!item.id) { item.id = 'c-' + Date.now() + Math.random().toString(36).slice(2); changed = true; }
+      });
+      if (changed) saveItems(items);
+    })();
+    renderChecklist();
+
+    addItemBtn.addEventListener('click', function() {
+      const text = checklistInput.value.trim();
+      if (text === '') return;
+      const items = getSavedItems();
+      items.push({ text: text, checked: false, id: 'c-' + Date.now() + Math.random().toString(36).slice(2) });
+      saveItems(items);
+      checklistInput.value = '';
+      renderChecklist();
+    });
+    checklistInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') addItemBtn.click();
+    });
+
+    // ==================== CALENDAR ====================
+    const calMonthLabel = document.getElementById('calMonthLabel');
+    const calGrid = document.getElementById('calGrid');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const selectedDateLabel = document.getElementById('selectedDateLabel');
+    const eventInput = document.getElementById('eventInput');
+    const addEventBtn = document.getElementById('addEventBtn');
+    const eventList = document.getElementById('eventList');
+    const noEventsMsg = document.getElementById('noEventsMsg');
+
+    const today = new Date();
+    let viewYear = today.getFullYear();
+    let viewMonth = today.getMonth();
+
+    function dateKey(year, month, day) {
+      const mm = (month + 1).toString().padStart(2, '0');
+      const dd = day.toString().padStart(2, '0');
+      return year + '-' + mm + '-' + dd;
+    }
+    let selectedKey = dateKey(viewYear, viewMonth, today.getDate());
+
+    const monthNames = ['January','February','March','April','May','June',
+                         'July','August','September','October','November','December'];
+    const dowNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const weekdayFmt = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+
+    function getAllEvents() {
+      const stored = localStorage.getItem('calendarEvents');
+      return stored ? JSON.parse(stored) : {};
+    }
+    function saveAllEvents(eventsObj) {
+      localStorage.setItem('calendarEvents', JSON.stringify(eventsObj));
+    }
+    function getEventsForKey(key) {
+      const all = getAllEvents();
+      return all[key] || [];
+    }
+
+    function renderCalendar() {
+      calMonthLabel.textContent = monthNames[viewMonth] + ' ' + viewYear;
+      calGrid.innerHTML = '';
+      const allEvents = getAllEvents();
+
+      dowNames.forEach(function(d) {
+        const el = document.createElement('div');
+        el.className = 'cal-dow';
+        el.textContent = d;
+        calGrid.appendChild(el);
+      });
+      const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day empty';
+        calGrid.appendChild(empty);
+      }
+      for (let day = 1; day <= daysInMonth; day++) {
+        const el = document.createElement('div');
+        el.className = 'cal-day';
+        el.textContent = day;
+        const key = dateKey(viewYear, viewMonth, day);
+        const isToday = day === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
+        if (isToday) el.classList.add('today');
+        if (key === selectedKey) el.classList.add('selected');
+        if (allEvents[key] && allEvents[key].length > 0) {
+          const dot = document.createElement('div');
+          dot.className = 'event-dot';
+          el.appendChild(dot);
+        }
+        el.addEventListener('click', function() {
+          selectedKey = key;
+          renderCalendar();
+          renderDayEvents();
+        });
+        calGrid.appendChild(el);
+      }
+    }
+
+    function keyToDate(key) {
+      const parts = key.split('-').map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function renderDayEvents() {
+      selectedDateLabel.textContent = weekdayFmt.format(keyToDate(selectedKey));
+      eventList.innerHTML = '';
+      const items = getEventsForKey(selectedKey);
+      noEventsMsg.style.display = items.length === 0 ? 'block' : 'none';
+      items.forEach(function(item) {
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.className = 'event-text';
+        span.textContent = item.text;
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', function() {
+          const all = getAllEvents();
+          all[selectedKey] = (all[selectedKey] || []).filter(function(i) { return i.id !== item.id; });
+          if (all[selectedKey].length === 0) delete all[selectedKey];
+          saveAllEvents(all);
+          renderDayEvents();
+          renderCalendar();
+        });
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        eventList.appendChild(li);
+      });
+    }
+
+    function addEvent() {
+      const text = eventInput.value.trim();
+      if (text === '') return;
+      const all = getAllEvents();
+      if (!all[selectedKey]) all[selectedKey] = [];
+      all[selectedKey].push({ text: text, id: Date.now().toString() + Math.random().toString(36).slice(2) });
+      saveAllEvents(all);
+      eventInput.value = '';
+      renderDayEvents();
+      renderCalendar();
+    }
+
+    addEventBtn.addEventListener('click', addEvent);
+    eventInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') addEvent();
+    });
+
+    prevMonthBtn.addEventListener('click', function() {
+      viewMonth -= 1;
+      if (viewMonth < 0) { viewMonth = 11; viewYear -= 1; }
+      renderCalendar();
+    });
+    nextMonthBtn.addEventListener('click', function() {
+      viewMonth += 1;
+      if (viewMonth > 11) { viewMonth = 0; viewYear += 1; }
+      renderCalendar();
+    });
+    renderCalendar();
+    renderDayEvents();
+
+    // ==================== REPORT ====================
+    const statToday = document.getElementById('statToday');
+    const statWeek = document.getElementById('statWeek');
+    const statAll = document.getElementById('statAll');
+    const barChart = document.getElementById('barChart');
+    const sessionListUl = document.getElementById('sessionListUl');
+    const sessionEmptyHint = document.getElementById('sessionEmptyHint');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const barDayFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
+    const sessionDateFmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
+
+    function formatMinutes(mins) {
+      if (mins < 60) return mins + 'm';
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return h + 'h' + (m ? ' ' + m + 'm' : '');
+    }
+
+    function renderReport() {
+      const sessions = getStudySessions();
+      const now = new Date();
+      const todayKey = dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+
+      // Build the last 7 day keys (oldest to newest)
+      const last7Keys = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        last7Keys.push(dateKey(d.getFullYear(), d.getMonth(), d.getDate()));
+      }
+
+      let todayMinutes = 0;
+      let weekMinutes = 0;
+      let allMinutes = 0;
+      const byDay = {};
+      last7Keys.forEach(function(k) { byDay[k] = 0; });
+
+      sessions.forEach(function(s) {
+        allMinutes += s.minutes;
+        if (s.date === todayKey) todayMinutes += s.minutes;
+        if (byDay.hasOwnProperty(s.date)) {
+          weekMinutes += s.minutes;
+          byDay[s.date] += s.minutes;
+        }
+      });
+
+      statToday.textContent = formatMinutes(todayMinutes);
+      statWeek.textContent = formatMinutes(weekMinutes);
+      statAll.textContent = formatMinutes(allMinutes);
+
+      // Bar chart
+      const maxVal = Math.max.apply(null, last7Keys.map(function(k) { return byDay[k]; }).concat([1]));
+      barChart.innerHTML = '';
+      last7Keys.forEach(function(k) {
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+        const fill = document.createElement('div');
+        fill.className = 'bar-fill';
+        const pct = Math.max((byDay[k] / maxVal) * 100, byDay[k] > 0 ? 6 : 2);
+        fill.style.height = pct + '%';
+        fill.title = formatMinutes(byDay[k]);
+        const label = document.createElement('div');
+        label.className = 'bar-day-label';
+        label.textContent = barDayFmt.format(keyToDate(k));
+        col.appendChild(fill);
+        col.appendChild(label);
+        barChart.appendChild(col);
+      });
+
+      // Session list, most recent first
+      sessionListUl.innerHTML = '';
+      const sorted = sessions.slice().reverse();
+      sessionEmptyHint.style.display = sorted.length === 0 ? 'block' : 'none';
+      sorted.forEach(function(s) {
+        const li = document.createElement('li');
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'item-label';
+        labelDiv.innerHTML = '<span class="icon">⏱️</span><span class="item-name">' +
+          sessionDateFmt.format(keyToDate(s.date)) + '</span><span class="item-sub">' + formatMinutes(s.minutes) + '</span>';
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', function() {
+          const all = getStudySessions().filter(function(i) { return i.id !== s.id; });
+          saveStudySessions(all);
+          renderReport();
+        });
+        li.appendChild(labelDiv);
+        li.appendChild(delBtn);
+        sessionListUl.appendChild(li);
+      });
+    }
+
+    clearHistoryBtn.addEventListener('click', function() {
+      if (!confirm('Clear all study history? This can\'t be undone.')) return;
+      saveStudySessions([]);
+      renderReport();
+    });
+
+    // ==================== THEME ====================
+    const swatchRow = document.getElementById('swatchRow');
+    const customColorInput = document.getElementById('customColorInput');
+    const resetThemeBtn = document.getElementById('resetThemeBtn');
+    const bgFileInput = document.getElementById('bgFileInput');
+    const removeBgBtn = document.getElementById('removeBgBtn');
+
+    const presetColors = ['#D6336C', '#E8590C', '#2F9E44', '#1971C2', '#7048E8', '#495057'];
+    const DEFAULT_COLOR = '#D6336C';
+
+    function shadeColor(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      let r = (num >> 16) + Math.round(2.55 * percent);
+      let g = ((num >> 8) & 0x00FF) + Math.round(2.55 * percent);
+      let b = (num & 0x0000FF) + Math.round(2.55 * percent);
+      r = Math.max(Math.min(255, r), 0);
+      g = Math.max(Math.min(255, g), 0);
+      b = Math.max(Math.min(255, b), 0);
+      return '#' + [r, g, b].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+    }
+
+    function applyTheme(color) {
+      document.documentElement.style.setProperty('--accent', color);
+      document.documentElement.style.setProperty('--accent-dark', shadeColor(color, -18));
+      document.documentElement.style.setProperty('--accent-light', shadeColor(color, 72));
+      document.documentElement.style.setProperty('--accent-pale', shadeColor(color, 90));
+      localStorage.setItem('themeColor', color);
+      customColorInput.value = color;
+      updateSwatchSelection(color);
+    }
+
+    function updateSwatchSelection(color) {
+      document.querySelectorAll('.swatch').forEach(function(sw) {
+        sw.classList.toggle('selected', sw.dataset.color.toLowerCase() === color.toLowerCase());
+      });
+    }
+
+    presetColors.forEach(function(color) {
+      const sw = document.createElement('div');
+      sw.className = 'swatch';
+      sw.style.background = color;
+      sw.dataset.color = color;
+      sw.addEventListener('click', function() { applyTheme(color); });
+      swatchRow.appendChild(sw);
+    });
+
+    customColorInput.addEventListener('input', function() {
+      applyTheme(customColorInput.value);
+    });
+
+    resetThemeBtn.addEventListener('click', function() {
+      applyTheme(DEFAULT_COLOR);
+    });
+
+    const savedColor = localStorage.getItem('themeColor') || DEFAULT_COLOR;
+    applyTheme(savedColor);
+
+    // ---------- Dark mode ----------
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    function applyDarkMode(isDark) {
+      document.body.classList.toggle('dark-mode', isDark);
+      darkModeToggle.checked = isDark;
+      localStorage.setItem('darkMode', isDark ? '1' : '0');
+    }
+    darkModeToggle.addEventListener('change', function() {
+      applyDarkMode(darkModeToggle.checked);
+    });
+    applyDarkMode(localStorage.getItem('darkMode') === '1');
+
+    // ---------- Background image ----------
+    const MAX_IMAGE_CHARS = 1200000; // roughly 900KB — keeps localStorage from filling up
+
+    function applyBackgroundImage(dataUrl) {
+      document.body.style.backgroundImage = 'url(' + dataUrl + ')';
+    }
+
+    function clearBackgroundImage() {
+      document.body.style.backgroundImage = '';
+      localStorage.removeItem('bgImage');
+    }
+
+    bgFileInput.addEventListener('change', function() {
+      const file = bgFileInput.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function() {
+        const dataUrl = reader.result;
+        if (dataUrl.length > MAX_IMAGE_CHARS) {
+          alert('That image is a bit too large to save — try a smaller photo (under ~1MB).');
+          return;
+        }
+        try {
+          localStorage.setItem('bgImage', dataUrl);
+          applyBackgroundImage(dataUrl);
+        } catch (e) {
+          alert('Could not save that image — it may be too large for browser storage.');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    removeBgBtn.addEventListener('click', clearBackgroundImage);
+
+    const savedBg = localStorage.getItem('bgImage');
+    if (savedBg) applyBackgroundImage(savedBg);
+
+    // ==================== CLEAR ALL DATA (local only) ====================
+    const clearAllDataBtn = document.getElementById('clearAllDataBtn');
+    clearAllDataBtn.addEventListener('click', function() {
+      if (!confirm('This will erase everything saved on this device: notes, checklist, calendar events, study history, and theme settings. This can\'t be undone. Continue?')) return;
+      const keysToClear = [
+        'studyMinutes', 'breakMinutes', 'notesData', 'notesText',
+        'checklistItems', 'calendarEvents', 'studySessions',
+        'themeColor', 'darkMode', 'bgImage'
+      ];
+      keysToClear.forEach(function(k) { localStorage.removeItem(k); });
+      location.reload();
+    });
+  </script>
+
+</body>
+</html>
