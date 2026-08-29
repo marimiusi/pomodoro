@@ -102,6 +102,62 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
       position: relative;
       animation: floatIn 0.5s ease both;
+      margin-bottom: 16px;
+    }
+
+    /* ---------- Stats card ---------- */
+    .stats-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      animation: floatIn 0.5s ease both;
+      margin-bottom: 12px;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 16px;
+      justify-content: space-around;
+    }
+
+    .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-number {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .stat-name {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* ---------- Quotes card ---------- */
+    .quotes-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      animation: floatIn 0.5s ease both;
+      margin-bottom: 12px;
+    }
+
+    .quote-text {
+      font-size: 14px;
+      color: var(--text-main);
+      text-align: center;
+      line-height: 1.6;
+      font-weight: 500;
+      letter-spacing: 0.3px;
     }
 
     #modeLabel {
@@ -958,7 +1014,10 @@
       }
       .page { max-width: 100%; }
       h1 { font-size: 34px; }
-      .timer-card { padding: 28px 18px 24px; }
+      .timer-card { padding: 28px 18px 24px; margin-bottom: 12px; }
+      .stats-card { margin-bottom: 10px; padding: 16px 18px; }
+      .goal-card { margin-bottom: 10px; padding: 16px 18px; }
+      .quotes-card { margin-bottom: 10px; padding: 16px 18px; }
       #display { font-size: 46px; }
       .timer-buttons button { padding: 12px 18px; font-size: 13.5px; }
       .settings-row { gap: 14px; }
@@ -1078,6 +1137,25 @@
           <input type="number" id="breakMinInput" min="1" max="60" value="5">
         </div>
       </div>
+    </div>
+
+    <!-- Quick Stats Card -->
+    <div class="stats-card">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-number" id="quickStatToday">0m</div>
+          <div class="stat-name">Today</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="quickStatSessions">0</div>
+          <div class="stat-name">Sessions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Motivation Quote -->
+    <div class="quotes-card">
+      <div class="quote-text" id="quoteDisplay">You've got this! 💪</div>
     </div>
   </div>
 
@@ -1394,6 +1472,7 @@
       playChime();
       if (mode === 'study') {
         logStudySession(studyMinutes);
+        updateQuickStats();
       }
       mode = mode === 'study' ? 'break' : 'study';
       secondsLeft = currentModeMinutes() * 60;
@@ -1454,6 +1533,38 @@
 
     updateDisplay();
     updateModeLabel();
+
+    function formatMinutes(mins) {
+      if (mins < 60) return mins + 'm';
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return h + 'h' + (m ? ' ' + m + 'm' : '');
+    }
+
+    // ==================== QUICK STATS ====================
+    const quickStatToday = document.getElementById('quickStatToday');
+    const quickStatSessions = document.getElementById('quickStatSessions');
+
+    function updateQuickStats() {
+      const sessions = getStudySessions();
+      const now = new Date();
+      const todayKey = dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+
+      let todayMinutes = 0;
+      let todayCount = 0;
+      sessions.forEach(function(s) {
+        if (s.date === todayKey) {
+          todayMinutes += s.minutes;
+          todayCount += 1;
+        }
+      });
+
+      quickStatToday.textContent = formatMinutes(todayMinutes);
+      quickStatSessions.textContent = todayCount;
+    }
+
+    // Initialize
+    updateQuickStats();
 
     function getStudySessions() {
       const stored = localStorage.getItem('studySessions');
@@ -1926,13 +2037,6 @@
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const barDayFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short' });
     const sessionDateFmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
-
-    function formatMinutes(mins) {
-      if (mins < 60) return mins + 'm';
-      const h = Math.floor(mins / 60);
-      const m = mins % 60;
-      return h + 'h' + (m ? ' ' + m + 'm' : '');
-    }
 
     function renderReport() {
       const sessions = getStudySessions();
