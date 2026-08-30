@@ -785,6 +785,7 @@ clearHistoryBtn.addEventListener('click', function() {
 });
 
 const swatchRow = document.getElementById('swatchRow');
+const accentColorCustomInput = document.getElementById('accentColorCustomInput');
 const darkVariantSwatchRow = document.getElementById('darkVariantSwatchRow');
 const darkVariantRow = document.getElementById('darkVariantRow');
 const bgFileInput = document.getElementById('bgFileInput');
@@ -798,15 +799,10 @@ const bgColorSwatchRow = document.getElementById('bgColorSwatchRow');
 const bgColorCustomInput = document.getElementById('bgColorCustomInput');
 const resetBgColorBtn = document.getElementById('resetBgColorBtn');
 
-const textColorSwatchRow = document.getElementById('textColorSwatchRow');
-const textColorCustomInput = document.getElementById('textColorCustomInput');
-const resetTextColorBtn = document.getElementById('resetTextColorBtn');
-
 const presetColors = ['#D6336C', '#E8590C', '#2F9E44', '#1971C2', '#7048E8', '#495057'];
 const DEFAULT_COLOR = '#D6336C';
 
 const bgColorPresets = ['#FDF6E3', '#EAF7ED', '#E7F0FB', '#F5E9F7', '#232323'];
-const textColorPresets = ['#1A1A1A', '#2B2B2B', '#003049', '#5C3A21', '#FFFFFF'];
 const cardColorPresets = ['#FFFFFF', '#FFF3F7', '#FDF6E3', '#EAF7ED', '#241A21'];
 
 const darkVariants = {
@@ -871,6 +867,7 @@ function applyTheme(color) {
   document.documentElement.style.setProperty('--accent-pale', shadeColor(color, 90));
   document.documentElement.style.setProperty('--btn-text', getContrastTextColor(color));
   localStorage.setItem('themeColor', color);
+  accentColorCustomInput.value = color;
   updateSwatchSelectionIn(swatchRow, color);
 }
 
@@ -881,6 +878,7 @@ function resetAccentColor() {
   document.documentElement.style.removeProperty('--accent-pale');
   document.documentElement.style.removeProperty('--btn-text');
   localStorage.removeItem('themeColor');
+  accentColorCustomInput.value = DEFAULT_COLOR;
   updateSwatchSelectionIn(swatchRow, 'default');
 }
 
@@ -888,6 +886,7 @@ buildSwatchesWithDefault(
   swatchRow, presetColors, applyTheme, function() { applyTheme(DEFAULT_COLOR); },
   'linear-gradient(135deg, ' + DEFAULT_COLOR + ', #FBD3E2 55%, #FFE7EF)'
 );
+accentColorCustomInput.addEventListener('input', function() { applyTheme(accentColorCustomInput.value); });
 const savedColor = localStorage.getItem('themeColor') || DEFAULT_COLOR;
 applyTheme(savedColor);
 if (!localStorage.getItem('themeColor')) updateSwatchSelectionIn(swatchRow, 'default');
@@ -941,33 +940,8 @@ buildSwatchesWithDefault(
 bgColorCustomInput.addEventListener('input', function() { applyBgColor(bgColorCustomInput.value); });
 resetBgColorBtn.addEventListener('click', resetBgColor);
 
-function applyTextColor(color) {
-  document.body.style.setProperty('--text-main', color);
-  document.body.classList.add('custom-text-active');
-  localStorage.setItem('textColor', color);
-  textColorCustomInput.value = color;
-  updateSwatchSelectionIn(textColorSwatchRow, color);
-}
-
-function resetTextColor() {
-  document.body.style.removeProperty('--text-main');
-  document.body.classList.remove('custom-text-active');
-  localStorage.removeItem('textColor');
-  updateSwatchSelectionIn(textColorSwatchRow, 'default');
-  textColorCustomInput.value = getComputedStyle(document.body).getPropertyValue('--text-main').trim() || '#4A2438';
-}
-
-buildSwatchesWithDefault(
-  textColorSwatchRow, textColorPresets, applyTextColor, resetTextColor,
-  'linear-gradient(135deg, var(--accent-dark), var(--text-muted) 55%, var(--accent))'
-);
-textColorCustomInput.addEventListener('input', function() { applyTextColor(textColorCustomInput.value); });
-resetTextColorBtn.addEventListener('click', resetTextColor);
-
 const savedBgColor = localStorage.getItem('bgColor');
 if (savedBgColor) { applyBgColor(savedBgColor); } else { updateSwatchSelectionIn(bgColorSwatchRow, 'default'); }
-const savedTextColor = localStorage.getItem('textColor');
-if (savedTextColor) { applyTextColor(savedTextColor); } else { updateSwatchSelectionIn(textColorSwatchRow, 'default'); }
 
 const darkModeToggle = document.getElementById('darkModeToggle');
 function applyDarkMode(isDark) {
@@ -1301,7 +1275,6 @@ resetAllOptionsBtn.addEventListener('click', function() {
   if (!confirm('Reset all colors, text, box style, doodles, and background image back to the default look? Your notes, checklist, calendar, and history stay untouched.')) return;
   resetAccentColor();
   resetBgColor();
-  resetTextColor();
   resetCardColor();
   clearBackgroundImage();
   resetDoodle();
@@ -1327,7 +1300,7 @@ clearAllDataBtn.addEventListener('click', function() {
   const keysToClear = [
     'studyMinutes', 'breakMinutes', 'notesData', 'notesText',
     'checklistItems', 'calendarEvents', 'studySessions', 'dailyQuote', 'customQuotes',
-    'themeColor', 'darkMode', 'darkVariant', 'bgImage', 'cardColor', 'bgColor', 'textColor',
+    'themeColor', 'darkMode', 'darkVariant', 'bgImage', 'cardColor', 'bgColor',
     'doodlePattern', 'doodleColor', 'doodleSize', 'doodleOpacity'
   ];
   keysToClear.forEach(function(k) { localStorage.removeItem(k); });
