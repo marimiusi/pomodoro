@@ -1129,3 +1129,110 @@ ul.nav-list li .item-label .item-sub {
   opacity: 0.9;
   margin-bottom: 4px;
 }
+
+/* ---------- Sign In panel ---------- */
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 6px;
+}
+
+.auth-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.auth-badge-signed-in {
+  background: linear-gradient(135deg, #3E9C64, #2F8F55);
+}
+
+.auth-intro {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 220px;
+}
+
+.auth-field {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 14px;
+}
+.auth-field label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-dark);
+  opacity: 0.85;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.auth-field input {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--accent-light);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text-main);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.auth-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-pale);
+}
+
+.auth-error {
+  width: 100%;
+  text-align: left;
+  background: var(--accent-pale);
+  color: var(--accent-dark);
+  border: 1px solid var(--accent-light);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.auth-btn-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+}
+.auth-btn-col button {
+  width: 100%;
+}
+
+.auth-current-email {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  background: var(--accent-pale);
+  border-radius: 999px;
+  padding: 8px 18px;
+  margin: 4px 0 22px;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.auth-signout-btn {
+  width: 100%;
+}
