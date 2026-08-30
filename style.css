@@ -1011,31 +1011,6 @@ ul.nav-list li .item-label .item-sub {
   * { animation: none !important; transition: none !important; }
 }
 
-/* ---------- Custom text color: reach every label, not just inputs ---------- */
-body.custom-text-active h1,
-body.custom-text-active #modeLabel,
-body.custom-text-active #modeLabel.break-mode,
-body.custom-text-active #display,
-body.custom-text-active #display.break-mode,
-body.custom-text-active .setting-field label,
-body.custom-text-active .side-panel h3,
-body.custom-text-active .theme-section-label,
-body.custom-text-active .stat-value,
-body.custom-text-active #calMonthLabel,
-body.custom-text-active .cal-dow,
-body.custom-text-active #selectedDateLabel,
-body.custom-text-active .cal-day.today,
-body.custom-text-active #bgFileLabel,
-body.custom-text-active .sub-back-btn,
-body.custom-text-active .reset-link-btn,
-body.custom-text-active #removeBgBtn,
-body.custom-text-active .delete-btn,
-body.custom-text-active .back-btn,
-body.custom-text-active .timer-buttons button,
-body.custom-text-active .doodle-option-label {
-  color: var(--text-main) !important;
-}
-
 /* ==================== MOBILE ==================== */
 @media (max-width: 600px) {
   body {
