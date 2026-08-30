@@ -122,6 +122,7 @@ studyMinInput.addEventListener('input', function() {
   if (!val || val < 1) return;
   studyMinutes = val;
   localStorage.setItem('studyMinutes', studyMinutes);
+  queueCloudSync();
   if (mode === 'study' && !running) {
     secondsLeft = studyMinutes * 60;
     updateDisplay();
@@ -133,6 +134,7 @@ breakMinInput.addEventListener('input', function() {
   if (!val || val < 1) return;
   breakMinutes = val;
   localStorage.setItem('breakMinutes', breakMinutes);
+  queueCloudSync();
   if (mode === 'break' && !running) {
     secondsLeft = breakMinutes * 60;
     updateDisplay();
@@ -167,6 +169,7 @@ function getQuote() {
 }
 function saveQuote(text) {
   localStorage.setItem('dailyQuote', text);
+  queueCloudSync();
 }
 function renderQuote() {
   quoteDisplay.textContent = getQuote();
@@ -199,6 +202,7 @@ function getStudySessions() {
 }
 function saveStudySessions(sessions) {
   localStorage.setItem('studySessions', JSON.stringify(sessions));
+  queueCloudSync();
 }
 function logStudySession(minutes) {
   const now = new Date();
@@ -326,6 +330,7 @@ function getNotesData() {
 }
 function saveNotesData(data) {
   localStorage.setItem('notesData', JSON.stringify(data));
+  queueCloudSync();
 }
 
 let currentFolderId = null;
@@ -499,6 +504,7 @@ function getSavedItems() {
 }
 function saveItems(items) {
   localStorage.setItem('checklistItems', JSON.stringify(items));
+  queueCloudSync();
 }
 function renderChecklist() {
   const items = getSavedItems();
@@ -592,6 +598,7 @@ function getAllEvents() {
 }
 function saveAllEvents(eventsObj) {
   localStorage.setItem('calendarEvents', JSON.stringify(eventsObj));
+  queueCloudSync();
 }
 function getEventsForKey(key) {
   const all = getAllEvents();
@@ -1336,6 +1343,72 @@ const signUpBtn = document.getElementById('signUpBtn');
 const signOutBtn = document.getElementById('signOutBtn');
 
 let firebaseReady = false;
+let db = null;
+
+// Which localStorage keys get synced to the signed-in user's account.
+// (Theme/doodle/background settings stay device-only on purpose.)
+const SYNC_KEYS = ['notesData', 'checklistItems', 'calendarEvents', 'studySessions', 'dailyQuote', 'studyMinutes', 'breakMinutes'];
+
+function collectSyncData() {
+  const data = {};
+  SYNC_KEYS.forEach(function(key) {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return;
+    try {
+      data[key] = JSON.parse(raw);
+    } catch (e) {
+      data[key] = raw;
+    }
+  });
+  data.updatedAt = Date.now();
+  return data;
+}
+
+function applyCloudData(data) {
+  SYNC_KEYS.forEach(function(key) {
+    if (!(key in data)) return;
+    const val = data[key];
+    const toStore = (typeof val === 'object' && val !== null) ? JSON.stringify(val) : String(val);
+    localStorage.setItem(key, toStore);
+  });
+}
+
+let cloudSyncTimeout = null;
+// Called after any local save. Pushes the latest data up to Firestore
+// (debounced so rapid edits don't spam the network) when someone's signed in.
+function queueCloudSync() {
+  if (!firebaseReady || !db) return;
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  clearTimeout(cloudSyncTimeout);
+  cloudSyncTimeout = setTimeout(function() {
+    db.collection('userData').doc(user.uid).set(collectSyncData(), { merge: true })
+      .catch(function(err) { console.error('Cloud sync failed:', err); });
+  }, 800);
+}
+
+// Called right after sign-in. Pulls the account's saved data down and
+// applies it locally. Guarded with sessionStorage so it only reloads once
+// per sign-in (not on every re-render / page refresh while still signed in).
+function pullCloudData(uid) {
+  db.collection('userData').doc(uid).get().then(function(docSnap) {
+    if (docSnap.exists) {
+      if (sessionStorage.getItem('cloudPulled') !== uid) {
+        sessionStorage.setItem('cloudPulled', uid);
+        applyCloudData(docSnap.data());
+        location.reload();
+      }
+    } else {
+      // First time this account has signed in — seed the cloud with
+      // whatever is currently saved on this device.
+      sessionStorage.setItem('cloudPulled', uid);
+      db.collection('userData').doc(uid).set(collectSyncData())
+        .catch(function(err) { console.error('Initial cloud push failed:', err); });
+    }
+  }).catch(function(err) {
+    console.error('Cloud pull failed:', err);
+  });
+}
 
 function showAuthError(message) {
   authErrorMsg.textContent = message;
@@ -1369,6 +1442,7 @@ if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
 } else {
   firebase.initializeApp(firebaseConfig);
   firebaseReady = true;
+  db = firebase.firestore();
 
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
@@ -1376,9 +1450,11 @@ if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
       authSignedInView.style.display = 'block';
       authCurrentEmail.textContent = user.email;
       clearAuthError();
+      pullCloudData(user.uid);
     } else {
       authSignedOutView.style.display = 'block';
       authSignedInView.style.display = 'none';
+      sessionStorage.removeItem('cloudPulled');
     }
   });
 
