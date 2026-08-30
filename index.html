@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <div class="privacy-footer">Everything here — notes, checklist, calendar, and history — is saved only in this browser, on this device. Nothing is uploaded or synced, so it isn't visible from any other browser or device.</div>
+    <div class="privacy-footer">Everything here — notes, checklist, calendar, and history — is saved in this browser by default. Sign in from the side tab to sync it to your account and see it on other devices too.</div>
   </div>
 
   <div class="watermark">by @marimiusi</div>
@@ -351,9 +351,10 @@
     </div>
   </div>
 
-  <!-- Firebase SDK (Authentication only) -->
+  <!-- Firebase SDK (Authentication + Firestore for cross-device sync) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <script src="script.js"></script>
 
