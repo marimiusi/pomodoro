@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Tara, aral tayo?</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Doodle background overlay -->
+  <div id="doodleLayer"></div>
+
+  <div class="page">
+    <h1>tara, aral tayo?</h1>
+
+    <div class="timer-card">
+      <div id="modeLabel">Study Time</div>
+      <p id="display">25:00</p>
+
+      <div class="timer-buttons">
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn" class="secondary" disabled>Pause</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="settings-row">
+        <div class="setting-field">
+          <label for="studyMinInput">Study (min)</label>
+          <input type="number" id="studyMinInput" min="1" max="180" value="25">
+        </div>
+        <div class="setting-field">
+          <label for="breakMinInput">Break (min)</label>
+          <input type="number" id="breakMinInput" min="1" max="60" value="5">
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Card -->
+    <div class="stats-card">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-number" id="quickStatToday">0m</div>
+          <div class="stat-name">Today</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="quickStatSessions">0</div>
+          <div class="stat-name">Sessions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quotes Section -->
+    <div class="quotes-card">
+      <div class="quotes-header">
+        <h3>Daily Motivation</h3>
+        <button id="editQuoteBtn" class="edit-btn" title="Edit motivation">✎</button>
+      </div>
+
+      <div id="quoteDisplayView">
+        <div class="quote-text" id="quoteDisplay">You've got this! 💪</div>
+      </div>
+
+      <div id="quoteEditView" style="display: none;">
+        <div class="goal-input-row">
+          <input type="text" id="quoteEditInput" placeholder="Your motivation...">
+          <button id="saveQuoteBtn">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="privacy-footer">Everything here — notes, checklist, calendar, and history — is saved only in this browser, on this device. Nothing is uploaded or synced, so it isn't visible from any other browser or device.</div>
+  </div>
+
+  <div class="watermark">by @marimiusi</div>
+
+  <!-- Side tabs -->
+  <div class="tabs-container">
+    <div class="side-tab" id="notesTab">Notes</div>
+    <div class="side-tab" id="checklistTab">Checklist</div>
+    <div class="side-tab" id="calendarTab">Calendar</div>
+    <div class="side-tab" id="reportTab">Report</div>
+    <div class="side-tab" id="themeTab">Theme</div>
+    <div class="side-tab" id="resetTab">Reset</div>
+  </div>
+
+  <!-- Notes panel -->
+  <div class="side-panel" id="notesPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="notesPanel" title="Close">‹</button>
+      <h3 id="notesHeaderText">Notes</h3>
+    </div>
+
+    <div id="notesPanelBody">
+      <!-- Folder list view -->
+      <div id="notesFolderView">
+        <div class="new-row">
+          <input type="text" id="newFolderInput" placeholder="New folder name...">
+          <button id="addFolderBtn">+</button>
+        </div>
+        <ul class="nav-list" id="folderListUl"></ul>
+        <div class="empty-hint" id="folderEmptyHint" style="display:none;">No folders yet — make one above.</div>
+      </div>
+
+      <!-- Notes-in-folder view -->
+      <div id="notesListView" style="display:none;">
+        <button class="sub-back-btn" id="folderBackBtn">‹ All folders</button>
+        <div class="new-row">
+          <input type="text" id="newNoteInput" placeholder="New note title...">
+          <button id="addNoteBtn">+</button>
+        </div>
+        <ul class="nav-list" id="noteListUl"></ul>
+        <div class="empty-hint" id="noteEmptyHint" style="display:none;">No notes in this folder yet.</div>
+      </div>
+
+      <!-- Note editor view -->
+      <div id="noteEditorView" style="display:none;">
+        <button class="sub-back-btn" id="noteBackBtn">‹ Back to folder</button>
+        <input type="text" id="noteTitleInput" placeholder="Title">
+        <textarea id="noteContentTextarea" placeholder="Write here..."></textarea>
+        <div class="note-save-row">
+          <button id="saveNoteBtn">Save</button>
+          <span id="noteSavedHint">Saved ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist panel -->
+  <div class="side-panel" id="checklistPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="checklistPanel" title="Close">‹</button>
+      <h3>Checklist</h3>
+    </div>
+    <div class="new-row">
+      <input type="text" id="checklistInput" placeholder="Add item...">
+      <button id="addItemBtn">Add</button>
+    </div>
+    <ul id="checklistList"></ul>
+  </div>
+
+  <!-- Calendar panel -->
+  <div class="side-panel" id="calendarPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="calendarPanel" title="Close">‹</button>
+      <h3>Calendar</h3>
+    </div>
+    <div class="cal-header">
+      <button id="prevMonthBtn">‹</button>
+      <span id="calMonthLabel"></span>
+      <button id="nextMonthBtn">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div id="dayEventsSection">
+      <div id="selectedDateLabel"></div>
+      <div class="event-input-row">
+        <input type="text" id="eventInput" placeholder="Add event...">
+        <button id="addEventBtn">Add</button>
+      </div>
+      <ul id="eventList"></ul>
+      <div id="noEventsMsg" style="display:none;">No events yet for this day.</div>
+    </div>
+  </div>
+
+  <!-- Report panel -->
+  <div class="side-panel" id="reportPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="reportPanel" title="Close">‹</button>
+      <h3>Report</h3>
+    </div>
+
+    <div class="report-stats">
+      <div class="stat-box">
+        <div class="stat-value" id="statToday">0m</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="statWeek">0m</div>
+        <div class="stat-label">Last 7 days</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="statAll">0m</div>
+        <div class="stat-label">All time</div>
+      </div>
+    </div>
+
+    <div class="theme-section-label">Last 7 days</div>
+    <div class="bar-chart" id="barChart"></div>
+
+    <div class="theme-section-label">Sessions</div>
+    <ul class="nav-list" id="sessionListUl"></ul>
+    <div class="empty-hint" id="sessionEmptyHint" style="display:none;">No study sessions logged yet — finish a study timer to see it here.</div>
+
+    <button id="clearHistoryBtn" class="secondary" style="margin-top:14px;">Clear history</button>
+  </div>
+
+  <!-- Theme panel -->
+  <div class="side-panel" id="themePanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="themePanel" title="Close">‹</button>
+      <h3>Theme</h3>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="defaultColorsBody">
+      <span>Default colors <span style="text-transform:none; font-weight:400; opacity:0.8;">(light / dark)</span></span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="defaultColorsBody">
+      <div class="dark-toggle-row">
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="switch-slider"></span>
+        </label>
+        <span style="font-size:13px;">Dark mode</span>
+      </div>
+
+      <div style="font-size:12px; color: var(--text-muted); margin-bottom:6px;">Accent</div>
+      <div class="swatch-row" id="swatchRow"></div>
+
+      <div id="darkVariantRow">
+        <div style="font-size:12px; color: var(--text-muted); margin:10px 0 6px;">Dark shade</div>
+        <div class="swatch-row" id="darkVariantSwatchRow"></div>
+      </div>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="bgColorBody">
+      <span>Background color</span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="bgColorBody">
+      <div class="swatch-row" id="bgColorSwatchRow"></div>
+      <div class="custom-color-row">
+        <input type="color" id="bgColorCustomInput" value="#FFF9FB">
+        <span style="font-size:12.5px;">Pick your own</span>
+      </div>
+      <button id="resetBgColorBtn" class="reset-link-btn">Use theme gradient</button>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="textColorBody">
+      <span>Text color</span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="textColorBody">
+      <div class="swatch-row" id="textColorSwatchRow"></div>
+      <div class="custom-color-row">
+        <input type="color" id="textColorCustomInput" value="#4A2438">
+        <span style="font-size:12.5px;">Pick your own</span>
+      </div>
+      <button id="resetTextColorBtn" class="reset-link-btn">Use theme text color</button>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="boxColorBody">
+      <span>Box color</span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="boxColorBody">
+      <div class="swatch-row" id="cardColorSwatchRow"></div>
+      <div class="custom-color-row">
+        <input type="color" id="cardColorCustomInput" value="#FFFFFF">
+        <span style="font-size:12.5px;">Pick your own</span>
+      </div>
+      <button id="resetCardColorBtn" class="reset-link-btn">Use theme box color</button>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="doodleBody">
+      <span>Doodles &amp; stuff</span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="doodleBody">
+      <div class="doodle-grid" id="doodleGrid"></div>
+
+      <div class="doodle-density-row">
+        <label for="doodleDensityInput">Size</label>
+        <input type="range" id="doodleDensityInput" min="18" max="60" value="32">
+        <input type="number" id="doodleDensityNumber" class="doodle-number-input" min="18" max="60" value="32">
+        <span class="doodle-unit">px</span>
+      </div>
+
+      <div class="doodle-color-row">
+        <input type="color" id="doodleColorInput" value="#D6336C">
+        <span>Doodle color</span>
+      </div>
+      <div class="doodle-density-row">
+        <label for="doodleOpacityInput">Opacity</label>
+        <input type="range" id="doodleOpacityInput" min="4" max="80" value="20">
+        <input type="number" id="doodleOpacityNumber" class="doodle-number-input" min="4" max="80" value="20">
+        <span class="doodle-unit">%</span>
+      </div>
+    </div>
+
+    <div class="theme-section-label toggle" data-target="bgImageBody">
+      <span>Background image</span>
+      <span class="toggle-arrow">▾</span>
+    </div>
+    <div class="collapsible-content" id="bgImageBody">
+      <label id="bgFileLabel" for="bgFileInput">Upload photo</label>
+      <input type="file" id="bgFileInput" accept="image/*">
+      <br>
+      <button id="removeBgBtn">Remove background photo</button>
+    </div>
+
+    <button id="resetAllOptionsBtn" class="reset-all-btn">Reset all options</button>
+  </div>
+
+  <!-- Reset panel -->
+  <div class="side-panel" id="resetPanel">
+    <div class="panel-header">
+      <button class="back-btn" data-panel="resetPanel" title="Close">‹</button>
+      <h3>Reset</h3>
+    </div>
+
+    <div class="theme-section-label">⚠ Warning</div>
+    <div class="empty-hint" style="font-style: normal; line-height: 1.5;">
+      This erases <strong>everything</strong> saved on this device — your notes, checklist, calendar events, study history, daily motivation, and theme settings. This cannot be undone, and nothing is backed up anywhere else.
+    </div>
+    <button id="clearAllDataBtn" class="reset-all-btn" style="margin-top:18px;">Erase everything on this device</button>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
