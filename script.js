@@ -244,6 +244,8 @@ const themeTab = document.getElementById('themeTab');
 const themePanel = document.getElementById('themePanel');
 const resetTab = document.getElementById('resetTab');
 const resetPanel = document.getElementById('resetPanel');
+const signInTab = document.getElementById('signInTab');
+const signInPanel = document.getElementById('signInPanel');
 
 function closeAllPanels() {
   notesPanel.classList.remove('open');
@@ -252,6 +254,7 @@ function closeAllPanels() {
   reportPanel.classList.remove('open');
   themePanel.classList.remove('open');
   resetPanel.classList.remove('open');
+  signInPanel.classList.remove('open');
 }
 
 function wireTab(tab, panel) {
@@ -267,6 +270,7 @@ wireTab(checklistTab, checklistPanel);
 wireTab(calendarTab, calendarPanel);
 wireTab(themeTab, themePanel);
 wireTab(resetTab, resetPanel);
+wireTab(signInTab, signInPanel);
 
 reportTab.addEventListener('click', function() {
   const wasOpen = reportPanel.classList.contains('open');
@@ -1306,3 +1310,111 @@ clearAllDataBtn.addEventListener('click', function() {
   keysToClear.forEach(function(k) { localStorage.removeItem(k); });
   location.reload();
 });
+
+// ==================== SIGN IN (Firebase Authentication) ====================
+// 1. Create a free project at https://console.firebase.google.com
+// 2. Build > Authentication > Get started > Sign-in method > enable "Email/Password"
+// 3. Project settings > General > "Your apps" > add a Web app > copy the config object
+// 4. Paste your own values in place of the placeholders below.
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ0OFwpiyviKsaEBRAQII6yUKpdi9g0Mw",
+  authDomain: "a-free-study-site.firebaseapp.com",
+  projectId: "a-free-study-site",
+  storageBucket: "a-free-study-site.firebasestorage.app",
+  messagingSenderId: "851675183646",
+  appId: "1:851675183646:web:405fe5b69be33e37984c0f"
+};
+
+const authEmailInput = document.getElementById('authEmailInput');
+const authPasswordInput = document.getElementById('authPasswordInput');
+const authErrorMsg = document.getElementById('authErrorMsg');
+const authSignedOutView = document.getElementById('authSignedOutView');
+const authSignedInView = document.getElementById('authSignedInView');
+const authCurrentEmail = document.getElementById('authCurrentEmail');
+const signInBtn = document.getElementById('signInBtn');
+const signUpBtn = document.getElementById('signUpBtn');
+const signOutBtn = document.getElementById('signOutBtn');
+
+let firebaseReady = false;
+
+function showAuthError(message) {
+  authErrorMsg.textContent = message;
+  authErrorMsg.style.display = 'block';
+}
+function clearAuthError() {
+  authErrorMsg.textContent = '';
+  authErrorMsg.style.display = 'none';
+}
+
+// Turns Firebase's error codes into plain, friendly messages.
+function friendlyAuthError(error) {
+  const code = error && error.code ? error.code : '';
+  if (code === 'auth/invalid-email') return 'That email address doesn\'t look right.';
+  if (code === 'auth/missing-password') return 'Please enter a password.';
+  if (code === 'auth/weak-password') return 'Password should be at least 6 characters.';
+  if (code === 'auth/email-already-in-use') return 'An account with that email already exists — try signing in instead.';
+  if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+    return 'Incorrect email or password.';
+  }
+  if (code === 'auth/too-many-requests') return 'Too many attempts — please wait a bit and try again.';
+  return (error && error.message) ? error.message : 'Something went wrong. Please try again.';
+}
+
+if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
+  // Config hasn't been filled in yet — keep the panel usable but explain what's missing,
+  // instead of throwing confusing errors when someone taps Sign In.
+  showAuthError('Sign-in isn\'t set up yet — add your Firebase config in script.js.');
+  signInBtn.disabled = true;
+  signUpBtn.disabled = true;
+} else {
+  firebase.initializeApp(firebaseConfig);
+  firebaseReady = true;
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      authSignedOutView.style.display = 'none';
+      authSignedInView.style.display = 'block';
+      authCurrentEmail.textContent = user.email;
+      clearAuthError();
+    } else {
+      authSignedOutView.style.display = 'block';
+      authSignedInView.style.display = 'none';
+    }
+  });
+
+  signInBtn.addEventListener('click', function() {
+    clearAuthError();
+    const email = authEmailInput.value.trim();
+    const password = authPasswordInput.value;
+    if (!email || !password) { showAuthError('Please enter both email and password.'); return; }
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(function() {
+        authPasswordInput.value = '';
+      })
+      .catch(function(error) {
+        showAuthError(friendlyAuthError(error));
+      });
+  });
+
+  signUpBtn.addEventListener('click', function() {
+    clearAuthError();
+    const email = authEmailInput.value.trim();
+    const password = authPasswordInput.value;
+    if (!email || !password) { showAuthError('Please enter both email and password.'); return; }
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(function() {
+        authPasswordInput.value = '';
+      })
+      .catch(function(error) {
+        showAuthError(friendlyAuthError(error));
+      });
+  });
+
+  signOutBtn.addEventListener('click', function() {
+    firebase.auth().signOut();
+  });
+
+  authPasswordInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') signInBtn.click();
+  });
+}
