@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <div class="privacy-footer">Everything here — notes, checklist, calendar, and history — is saved in this browser by default. Sign in from the side tab to sync it to your account and see it on other devices too.</div>
+    <div class="privacy-footer">Everything here — notes, checklist, calendar, and history — is saved only in this browser, on this device. Nothing is uploaded or synced, so it isn't visible from any other browser or device.</div>
   </div>
 
   <div class="watermark">by @marimiusi</div>
@@ -86,7 +86,6 @@
     <div class="side-tab" id="reportTab">Report</div>
     <div class="side-tab" id="themeTab">Theme</div>
     <div class="side-tab" id="resetTab">Reset</div>
-    <div class="side-tab" id="signInTab">Sign In</div>
   </div>
 
   <!-- Notes panel -->
@@ -312,49 +311,6 @@
     </div>
     <button id="clearAllDataBtn" class="reset-all-btn" style="margin-top:18px;">Erase everything on this device</button>
   </div>
-
-  <!-- Sign In panel -->
-  <div class="side-panel" id="signInPanel">
-    <div class="panel-header">
-      <button class="back-btn" data-panel="signInPanel" title="Close">‹</button>
-      <h3>Sign In</h3>
-    </div>
-
-    <!-- Shown when signed OUT -->
-    <div id="authSignedOutView" class="auth-card">
-      <div class="auth-badge">👤</div>
-      <div class="auth-intro">Sign in to sync your progress, or create a free account.</div>
-
-      <div class="auth-field">
-        <label for="authEmailInput">Email</label>
-        <input type="text" id="authEmailInput" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label for="authPasswordInput">Password</label>
-        <input type="password" id="authPasswordInput" placeholder="••••••••" autocomplete="current-password">
-      </div>
-
-      <div id="authErrorMsg" class="auth-error" style="display:none;"></div>
-
-      <div class="auth-btn-col">
-        <button id="signInBtn">Sign In</button>
-        <button id="signUpBtn" class="secondary">Create Account</button>
-      </div>
-    </div>
-
-    <!-- Shown when signed IN -->
-    <div id="authSignedInView" class="auth-card" style="display:none;">
-      <div class="auth-badge auth-badge-signed-in">✓</div>
-      <div class="auth-intro">You're signed in as</div>
-      <div class="auth-current-email" id="authCurrentEmail"></div>
-      <button id="signOutBtn" class="secondary auth-signout-btn">Sign Out</button>
-    </div>
-  </div>
-
-  <!-- Firebase SDK (Authentication + Firestore for cross-device sync) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <script src="script.js"></script>
 
